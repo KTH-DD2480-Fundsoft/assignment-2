@@ -6,6 +6,10 @@ flask
 ngrook
 studentshell KTH 
 
+## Structure
+
+[Failed to load file!](doc/img/structure.png)
+
 ### branches: 
 main
 assessment
