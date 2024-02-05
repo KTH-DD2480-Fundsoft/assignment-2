@@ -8,7 +8,7 @@ studentshell KTH
 
 ## Structure
 
-[Failed to load file!](doc/img/structure.png)
+![Failed to load file!](doc/img/structure.png)
 
 ### branches: 
 main
