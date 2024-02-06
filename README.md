@@ -76,7 +76,6 @@ Always use the "squash and merge" option when merging GitHub PRs.
 # Dante Astorga Castillo
 
 # Sebastian Montén
-Testing this is a new line
 
 # Ludvig Skare
 
