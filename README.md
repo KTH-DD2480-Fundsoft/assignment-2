@@ -28,11 +28,6 @@ We will inform CI failure/success through the use of GitHub build Status
 via the GH REST API. We will create a simple web interface were build 
 history can be viewed.
 
-### When updating the server
-1. Create a release branch: `release/index/name`
-2. Whenever we push to a release branch the webhook sends that to server
-1. Merg beck to main
-
 ## Contributing / Workflow
 We use a GitHub organization to track our development process, creating a project
 to make use of Github's Kanban-like issue board and link this repository to said 
