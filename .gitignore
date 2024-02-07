@@ -10,3 +10,6 @@ __pycache__/
 
 ## Virtual Environment
 .venv
+
+# Builds of the doc
+doc/build/*
