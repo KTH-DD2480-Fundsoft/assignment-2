@@ -80,3 +80,4 @@ Always use the "squash and merge" option when merging GitHub PRs.
 # Ludvig Skare
 
 # Victor Stenmark
+
