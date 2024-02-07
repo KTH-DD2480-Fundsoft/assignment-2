@@ -8,8 +8,10 @@ import os
 
 CURRENT_PATH = os.path.abspath(__file__)
 TEST_CI_PATH = os.path.join(os.path.dirname(CURRENT_PATH), "../tmp/test_ci_server")
+TMP_CI_PATH = os.path.join(os.path.dirname(CURRENT_PATH), "../tmp/")
 
 def run_tests():
+    os.chdir(TMP_CI_PATH)
     loader = unittest.TestLoader()
     tests = loader.discover(TEST_CI_PATH)
 

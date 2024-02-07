@@ -1,6 +1,8 @@
 import os
 import subprocess
-from tests import run_tests
+from test_runner import run_tests
+from logger import Logger
+
 """
 Contains logic for the the continuous integration server
 """
@@ -9,20 +11,32 @@ CURRENT_PATH = os.path.abspath(__file__)
 TMP_PATH = os.path.join(os.path.dirname(CURRENT_PATH), "../tmp/")
 
 def continuous_integration(commit_hash):
+    logger = Logger()
+    
+    logger.info(f"Pulling repository with hash {commit_hash}")
     pull_repo(commit_hash)
 
-    print("Running tests")
+    logger.info("Running tests")
     test_result = run_tests()
-    if test_result.wasSuccessful():
-        print("Tests passed")
-    else:
-        print("Tests failed")
-        print(test_result.failures)
-        print(test_result.errors)
 
+    build_dict = {"commit_id" : commit_hash}
+    if test_result.wasSuccessful():
+        build_dict["success"] = True
+        build_dict["status_msg"] = "Success"
+    else:
+        build_dict["success"] = False
+        error_messages = []
+        for tup in test_result.errors:
+            error_messages.append(tup[1])
+        build_dict["status_msg"] = '\n'.join(error_messages)
+
+    logger.log_build(build_dict)
+
+    logger.info("Updating commit status")
     update_commit_status(commit_hash, test_result.wasSuccessful())
 
-    remove_repo()
+    #logger.info("Removing repository")
+    #remove_repo()
 
 def pull_repo(commit_hash):
     """
@@ -40,18 +54,6 @@ def remove_repo():
     """
     subprocess.run(["rm", "-rf", TMP_PATH])
 
-def valid_directory():
-    """ 
-    Checks that TMP_RELATIVE_PATH exists and contains the directories
-    """
-    """
-    ci_server = TMP_PATH + "ci-server"
-    doc = TMP_PATH + "doc"
-
-    return os.path.isdir(TMP_PATH) and os.path.isdir(ci_server) and os.path.isdir(doc)    
-    """
-    pass
-
 def update_commit_status(commit_hash, status):
     """
     Updates the commit status on the remote server
@@ -60,4 +62,5 @@ def update_commit_status(commit_hash, status):
     
 
 if __name__ == "__main__":
-    continuous_integration("9db4097800643a82f017ef626bf1cd5322750101")
+    # Only used for debugging purposes
+    continuous_integration("8bb44dc4dc9bdca324c40ae5e2d824009c083a69")
