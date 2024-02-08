@@ -3,6 +3,10 @@ if __name__ == '__main__': exit()
 import logging
 from datetime import datetime
 
+
+
+import os
+
 class InfoOnlyFilter(logging.Filter):
     ''' 
         A filter for enforcing that the logger
@@ -22,6 +26,8 @@ class Logger():
     def __init__(self, test=False):
         test_str = ".test" if test else ""
         filename = datetime.now().strftime(f"%Y-%m-%d{test_str}.log")
+
+        print(f'filename = {filename}')
 
         # The log message format
         log_str_format = '%(asctime)s - %(levelname)s: %(message)s'
@@ -50,7 +56,14 @@ class Logger():
 
     def _close(self):
         ''' Close all handlers. Use with care, mainly for testing purposes. '''
-        for handler in self.logger.handlers + self.build_logger.handlers:
+        # for handler in self.logger.handlers + self.build_logger.handlers:
+        #     handler.close()
+
+        # test: trying to find why I get AttributeError: 'Logger' object has no attribute 'build_logger'
+        handlers_to_close = self.logger.handlers
+        if hasattr(self, 'build_logger'):
+            handlers_to_close += self.build_logger.handlers
+        for handler in handlers_to_close:
             handler.close()
 
     def debug(self, msg, *args): 

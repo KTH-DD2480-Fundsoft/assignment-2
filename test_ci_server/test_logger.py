@@ -1,6 +1,23 @@
+# #######################################################
+# # added this block to solve ModuleNotFoundError
+# #######################################################
+# import sys
+# import os
+# # Get the absolute path of the parent directory
+# project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+# # Add the parent directory to sys.path
+# sys.path.append(project_dir)
+# # Print out sys.path to verify that the directory has been added
+# # print(sys.path)
+# #######################################################
+
+
+
+
 import datetime
 import unittest
 import ci_server.logger
+
 
 class TestLogger(unittest.TestCase):
     
@@ -58,7 +75,8 @@ class TestLogger(unittest.TestCase):
 
 
 
-
+    def test_build_logger(self):
+        self.fail(msg="Not implemented yet")
 
 
 
