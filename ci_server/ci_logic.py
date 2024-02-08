@@ -17,26 +17,26 @@ def continuous_integration(commit_hash):
     pull_repo(commit_hash)
 
     logger.info("Running tests")
-    test_result = run_tests()
+    output, error = run_tests()
+    
+    # TODO: Add better way of determining a successful run
+    successful_run = ("OK" in output or "OK" in error)
 
     build_dict = {"commit_id" : commit_hash}
-    if test_result.wasSuccessful():
+    if successful_run:
         build_dict["success"] = True
         build_dict["status_msg"] = "Success"
     else:
         build_dict["success"] = False
-        error_messages = []
-        for tup in test_result.errors:
-            error_messages.append(tup[1])
-        build_dict["status_msg"] = '\n'.join(error_messages)
+        build_dict["status_msg"] = error
 
     logger.log_build(build_dict)
 
     logger.info("Updating commit status")
-    update_commit_status(commit_hash, test_result.wasSuccessful())
+    update_commit_status(commit_hash, successful_run)
 
-    #logger.info("Removing repository")
-    #remove_repo()
+    logger.info("Removing repository")
+    remove_repo()
 
 def pull_repo(commit_hash):
     """
