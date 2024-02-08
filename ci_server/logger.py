@@ -27,12 +27,9 @@ class Logger():
         test_str = ".test" if test else ""
         filename = datetime.now().strftime(f"%Y-%m-%d{test_str}.log")
 
-        print(f'filename = {filename}')
-
         # The log message format
         log_str_format = '%(asctime)s - %(levelname)s: %(message)s'
         build_log_str_format = '%(asctime)s: %(message)s' # Remove INFO string from printout
-
 
         # Create a logger for standard log levels
         self.logger = logging.getLogger("Log")
@@ -71,7 +68,7 @@ class Logger():
         self.logger.debug(msg, *args)
 
     def info(self, msg, *args):    
-        ''' Log message at level INFO'''   
+        ''' Log message at level INFO'''
         self.logger.info(msg, *args)
 
     def warning(self, msg, *args): 
