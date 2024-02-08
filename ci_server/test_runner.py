@@ -7,7 +7,6 @@ import os
 import subprocess
 
 CURRENT_PATH = os.path.abspath(__file__)
-TEST_CI_PATH = os.path.join(os.path.dirname(CURRENT_PATH), "../tmp/test_ci_server")
 TMP_CI_PATH = os.path.join(os.path.dirname(CURRENT_PATH), "../tmp/")
 
 def run_tests():
