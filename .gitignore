@@ -11,6 +11,13 @@ __pycache__/
 ## Virtual Environment
 .venv
 
+## PDM
+#   The .pdm.toml file contains configurations and may be
+#   committed in some cases.
+.pdm.toml
+.pdm-python
+.pdm-build/
+
 # Builds of the doc
 doc/build/*
 
