@@ -4,8 +4,9 @@ import compileall
 class CompilationTests(unittest.TestCase):
 
     def test_compile_ci_logic(self):
-        try:     
-            compileall.compile_dir("ci_server", force=True)
-            pass
-        except Exception as e:
-            self.fail(f"Compilation error: {str(e)}")
+        ''' 
+            'Compiles' all files in the directory `ci_server`. Iff any file fails to compile 
+            this test fails.
+        '''
+        res = compileall.compile_dir("ci_server", force=True)
+        self.assertTrue(res, msg="Failed to compile the file sin ci_server")
