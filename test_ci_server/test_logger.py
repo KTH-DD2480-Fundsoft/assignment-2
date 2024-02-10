@@ -14,16 +14,51 @@
 
 
 
-import datetime
+from datetime import datetime, timedelta
 import unittest
 import ci_server.logger
 
+import os
+
 
 class TestLogger(unittest.TestCase):
-    
-    log_file_path = datetime.datetime.now().strftime("log/%Y-%m-%d.test.log")
-    build_file_path = datetime.datetime.now().strftime("log/%Y-%m-%d.test.log")
+
+    max_time_since_created_last_build_log = 10 # milliseconds
+
     logger = ci_server.logger.Logger(test=True)
+
+    build_dir = 'build_history'
+    build_files = os.listdir(build_dir)
+
+    def test_exists_files_in_build_history(self):
+        print(f'self.build_files = {self.build_files}')
+        if not self.build_files:
+            self.fail("No files found in build history directory")
+    
+    build_files.sort(reverse=True)  # Sort files in reverse alphabetical order
+    latest_build_file = build_files[0]
+    build_file_path = os.path.join(build_dir, latest_build_file) # latest build file path
+
+    log_file_path = datetime.now().strftime("log/%Y-%m-%d.test.log")
+
+    
+
+
+    
+    def test_latest_build_log_file_path(self):
+
+        # Extract timestamp from filename
+        filename_parts = self.latest_build_file.split('.')[0].replace('build_', '')
+        file_timestamp = datetime.strptime(filename_parts, "%Y-%m-%d_%H-%M-%S-%f")
+
+        # Calculate current time and compare
+        current_time = datetime.now()
+        time_difference = current_time - file_timestamp
+
+        # Assert that the time difference is at least max_time_since_created_last_build_log milliseconds
+        self.assertLessEqual(time_difference, timedelta(milliseconds=self.max_time_since_created_last_build_log),
+                                f"Latest file '{self.latest_build_file}' does not represent a time no more than {self.max_time_since_created_last_build_log} milliseconds ago.")
+    
 
     def test_file_path(self):
         ''' 
@@ -65,8 +100,8 @@ class TestLogger(unittest.TestCase):
         self.logger.info("42")
         l = f.readline()
         try: 
-            date = datetime.datetime.strptime(l.split(' - ')[0],"%Y-%m-%d %H:%M:%S,%f")
-            if date - datetime.datetime.now() > datetime.timedelta(microseconds=10):
+            date = datetime.strptime(l.split(' - ')[0],"%Y-%m-%d %H:%M:%S,%f")
+            if date - datetime.now() > timedelta(microseconds=10):
                 raise ValueError()
         except: self.fail("Time format in log is wrong!")
         finally: f.close()

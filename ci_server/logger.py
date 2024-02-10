@@ -25,7 +25,8 @@ class Logger():
 
     def __init__(self, test=False):
         test_str = ".test" if test else ""
-        filename = datetime.now().strftime(f"%Y-%m-%d{test_str}.log")
+        filename = datetime.now().strftime(f"%Y-%m-%d{test_str}.log") # for general logs
+        build_filename = datetime.now().strftime(f"%Y-%m-%d_%H-%M-%S-%f{test_str}.txt") # for builds, favorable for displaying in browser if each build has its own txt file
 
         # The log message format
         log_str_format = '%(asctime)s - %(levelname)s: %(message)s'
@@ -42,7 +43,7 @@ class Logger():
         # Create a logger for BUILD level logs
         self.build_logger = logging.getLogger("Build")
         self.build_logger.setLevel(logging.INFO)  # Only allow INFO level for BUILD
-        build_handler = logging.FileHandler(f"build_history/build_{filename}")
+        build_handler = logging.FileHandler(f"build_history/build_{build_filename}")
         build_formatter = logging.Formatter(build_log_str_format)
         build_handler.setFormatter(build_formatter)
         build_handler.addFilter(InfoOnlyFilter())  # Add the custom filter that only allows INFO level logs
