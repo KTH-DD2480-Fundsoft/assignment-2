@@ -1,7 +1,7 @@
 import os
 import subprocess
-from test_runner import run_tests
-from logger import Logger
+from ci_server.test_runner import run_tests
+from ci_server.logger import Logger
 
 """
 Contains logic for the the continuous integration server
