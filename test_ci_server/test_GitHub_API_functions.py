@@ -1,5 +1,6 @@
-from GitHub_API_functions import create_commit_status
 import unittest
+from ci_server.GitHub_API_functions import create_commit_status
+
 
 class TestGitHubAPIFunctions(unittest.TestCase):
     
