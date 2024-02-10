@@ -22,7 +22,7 @@ The repo itself will be structured in the following way:
 
 The server will be run at KTH student-shell2, using ngrok to tunnel past
 KTH firewall. The whole program will be structured something like this:
-![Failed to load file!](s/img/structure.png)
+![Failed to load file!](docs/img/structure.png)
 
 We will inform CI failure/success through the use of GitHub build Status
 via the GH REST API. We will create a simple web interface were build 
