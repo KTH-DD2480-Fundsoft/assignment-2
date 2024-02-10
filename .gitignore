@@ -18,7 +18,7 @@ __pycache__/
 .pdm-python
 .pdm-build/
 
-# Builds of the doc
-doc/build/*
+# Builds of the docs
+docs/build/*
 
 tmp/
