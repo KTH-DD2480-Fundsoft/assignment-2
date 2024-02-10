@@ -1,9 +1,23 @@
+import os
 from flask import Flask, request 
+from ci_server.logger import Logger
+from datetime import datetime
+from ci_server.ci_logic import continuous_integration 
+from multiprocessing import Process
+
+log = Logger()
+
+UNAUTHORIZED = ("unauthorized", 401)
+BAD_REQUEST  = ("bad request" , 400)
+INTERNAL_ERROR = ("internal error", 500)
 
 app = Flask(__name__)
+app.config.from_prefixed_env(loads=lambda x: x)
 
+assert app.config["AUTHKEY"], "No authkey in ENV"
 
-
+def start_server(ip, port): 
+    app.run(host=ip,port=port)
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
@@ -36,13 +50,53 @@ def webhook():
         This function, however, should only return JSON and a return-code.
 
     '''
-    # Only accept POST requests.
-    if request.method == 'POST':
-        # Guard agains bad data.
-        if request.is_json:
-            print("Got WH data: ", request.json)
-            return {"response" : "thanks!"}, 202 
-    return ({}, 400)
+    log.info(f"New webhook from {request.remote_addr}")
+    
+    authkey = app.config["AUTHKEY"] 
+    # Make sure the authkey is correct.
+    authorized = "X-Hub-Signature-256" in request.headers 
+    authorized = authorized and request.headers["X-Hub-Signature-256"] == authkey 
+    if not authorized:
+        log.error(f"Invalid secret key from {request.remote_addr}")
+        return UNAUTHORIZED
+    # Make sure data is JSON
+    if not request.is_json: return BAD_REQUEST 
+    
+    # Try to get all the data needed
+    try:
+        data = request.get_json()
+        ref           = data['ref']
+        commit_id     = data['head_commit']['id']
+        timestamp     = datetime.fromisoformat(data['head_commit']['timestamp'])
+        commit_author = data['head_commit']['author']
+        pusher        = data['pusher']['name'] 
+    # All the above data is required, bad data otherwise
+    except KeyError as e:
+        log.error(str(e))
+        return BAD_REQUEST 
+    except ValueError as e:
+        log.error(str(e))
+        return BAD_REQUEST 
+    # Any other exception is a server error
+    except Exception as e:
+        log.error("unhandled exception: " + str(e))
+        return INTERNAL_ERROR
+    
+    log.info(f"""Received CI webhook from {request.remote_addr}
+    ref: {ref}
+    commit: 
+        id: {commit_id}
+        timestamp {timestamp.timestamp}    
+        author: {commit_author}
+    pusher: {pusher}""")
+    
+    if not app.config['TESTING']:
+        # Fire and forget. Not tested when testing the server, we have seperate
+        # unittests for this.
+        ci_process = Process(target=continuous_integration, args=(commit_id,))
+        ci_process.start()
+
+    return {"response" : "thanks!"}, 202 
 
 @app.route('/', methods=['GET'])
 def index():
@@ -77,8 +131,6 @@ def index():
 <br>
         """, 200)
 
-def start_server(ip,port): 
-    app.run(host=ip,port=port)
 
 if __name__ == '__main__': start_server("0.0.0.0",8027)
 
