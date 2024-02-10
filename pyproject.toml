@@ -27,11 +27,11 @@ distribution = true
 
 [tool.pdm.scripts]
 # Source running
-ci_server = "python ci_server/server.py"
+ci-server = "python ci_server/server.py"
 # Docs generation
 gen-autodocs = "sphinx-apidoc -o docs/source ."
-build_docs = {shell = "cd docs && make html"}
-docs = {composite = ["gen-autodocs", "build_docs"]}
+build-docs = {shell = "cd docs && make html"}
+docs = {composite = ["gen-autodocs", "build-docs"]}
 
 [tool.pdm.dev-dependencies]
 docs = [
