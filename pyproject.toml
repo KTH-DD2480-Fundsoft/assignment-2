@@ -3,7 +3,7 @@ name = "assignment-2"
 version = "0.1.0"
 description = "PDM project for assignment 2 in the DD2480 course at KTH."
 authors = [
-    {name = "Rasmus Danielsson", email = "addyourid@kth.se"},
+    {name = "Rasmus Danielsson", email = "rasdan@kth.se"},
     {name = "Sebastian Montén", email = "smonten@kth.se"},
     {name = "Ludvig Skare", email = "lskare@kth.se"},
     {name = "Victor Stenmark", email = "vstenm@kth.se"},
