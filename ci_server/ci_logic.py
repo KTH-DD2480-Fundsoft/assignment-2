@@ -64,4 +64,4 @@ def update_commit_status(commit_hash, status):
 if __name__ == "__main__":
     # Only used for debugging purposes
     # continuous_integration("8bb44dc4dc9bdca324c40ae5e2d824009c083a69")
-    continuous_integration("7ed8dedd076cfefc2cf73b012c461e20cc485d69") # latest
+    continuous_integration("7ed8dedd076cfefc2cf73b012c461e20cc485d69") # recent
