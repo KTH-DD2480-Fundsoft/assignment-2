@@ -1,0 +1,40 @@
+[project]
+name = "assignment-2"
+version = "0.1.0"
+description = "PDM project for assignment 2 in the DD2480 course at KTH."
+authors = [
+    {name = "Rasmus Danielsson", email = "rasdan@kth.se"},
+    {name = "Sebastian Montén", email = "smonten@kth.se"},
+    {name = "Ludvig Skare", email = "lskare@kth.se"},
+    {name = "Victor Stenmark", email = "vstenm@kth.se"},
+    {name = "Dante Astorga Castillo", email = "danteac@kth.se"},
+]
+dependencies = [
+    "flask>=3.0.2",
+    "requests>=2.31.0",
+]
+requires-python = ">=3.8"
+readme = "README.md"
+license = {text = "GPL-3.0-or-later"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+distribution = true
+
+[tool.pdm.scripts]
+# Source running
+ci-server = "python -m ci_server"
+# Docs generation
+gen-autodocs = "sphinx-apidoc -o docs/source ."
+build-docs = {shell = "cd docs && make html"}
+docs = {composite = ["gen-autodocs", "build-docs"]}
+
+[tool.pdm.dev-dependencies]
+docs = [
+    "sphinx>=7.1.2",
+    "sphinx-rtd-theme>=2.0.0",
+]

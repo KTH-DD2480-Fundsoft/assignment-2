@@ -131,7 +131,5 @@ def index():
 <br>
         """, 200)
 
-
-if __name__ == '__main__': start_server("0.0.0.0",8027)
-
-
+def start_server(ip,port): 
+    app.run(host=ip,port=port)

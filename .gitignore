@@ -1,17 +1,24 @@
 # macOS
 *.DS_Store
 
-# IDE
+# JetBrains
 *.idea
 *.iml
 
-# PYTHON 
+# Python 
 __pycache__/
 
 ## Virtual Environment
 .venv
 
-# Builds of the doc
-doc/build/*
+## PDM
+#   The .pdm.toml file contains configurations and may be
+#   committed in some cases.
+.pdm.toml
+.pdm-python
+.pdm-build/
+
+# Builds of the docs
+docs/build/*
 
 tmp/

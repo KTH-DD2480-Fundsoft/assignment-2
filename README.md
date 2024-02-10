@@ -7,7 +7,7 @@ The repo itself will be structured in the following way:
 .
 ├── ci-server
 │   └── where we put the source for the CI-server itself 
-├── doc
+├── docs
 │   └── where we put all the documentation 
 ├── log
 │   └── where we put all logs (will contain old build data)
@@ -22,7 +22,7 @@ The repo itself will be structured in the following way:
 
 The server will be run at KTH student-shell2, using ngrok to tunnel past
 KTH firewall. The whole program will be structured something like this:
-![Failed to load file!](doc/img/structure.png)
+![Failed to load file!](docs/img/structure.png)
 
 We will inform CI failure/success through the use of GitHub build Status
 via the GH REST API. We will create a simple web interface were build 
@@ -38,7 +38,7 @@ Tickets are connected to specific branches that implement the tickets, these are
 merged into our main branch through pull-requests.
 
 ### TBD - Trunk-based development
-We used a trunk-based development model in which we, for each feature, bug, doc, etc,
+We used a trunk-based development model in which we, for each feature, bug, docs, etc,
 create branches of the main branch indicating atomic changes relating to a specific
 ticket. 
 
