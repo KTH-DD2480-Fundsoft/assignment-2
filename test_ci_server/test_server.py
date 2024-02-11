@@ -77,6 +77,20 @@ class TestServer(unittest.TestCase):
             response = client.get(self.index_addr)
             self.assertTrue(response.status_code == 200, 
                             msg=f"Expected HTTP 200, got {response.status_code}")
+            
+    @unittest.skipIf(not os.path.isdir('build_history'), 
+                     "Build history directory not found. Skipping test.")
+    def test_build_history_urls(self):
+        # Get all filenames in build_history
+        build_history_names = [f for f in os.listdir('build_history') 
+                               if os.path.isfile(os.path.join('build_history', f))]
+
+        with self.app.test_client() as client:
+            for name in build_history_names:
+                url = self.index_addr + "/build_history/" + name
+                response = client.get(url)
+                self.assertTrue(response.status_code == 200, 
+                                msg=f"Expected HTTP 200, got {response.status_code}")
     
     @classmethod
     def tearDownClass(cls) -> None:

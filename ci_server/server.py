@@ -4,6 +4,7 @@ from ci_server.logger import Logger
 from datetime import datetime
 from ci_server.ci_logic import continuous_integration 
 from multiprocessing import Process
+from flask_autoindex import AutoIndex
 
 log = Logger()
 
@@ -13,6 +14,11 @@ INTERNAL_ERROR = ("internal error", 500)
 
 app = Flask(__name__)
 app.config.from_prefixed_env(loads=lambda x: x)
+
+build_path = "./build_history" # Relative path to the build history directory
+
+# Show the files in the build history directory
+AutoIndex(app, browse_root=build_path) 
 
 assert app.config["AUTHKEY"], "No authkey in ENV"
 
