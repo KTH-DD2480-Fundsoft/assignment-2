@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 ''' 
-Runs all unit and system tests in the directory 'test_ci_server' in tmp with file prefix "test_". 
+Runs all unit and system tests in the directory 'test_ci_server' in tmp with file prefix 'test'. 
 This also includes files in subdirectories
 '''
 import os
