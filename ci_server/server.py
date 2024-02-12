@@ -6,6 +6,32 @@ from ci_server.ci_runner import continuous_integration
 from multiprocessing import Process
 from flask_autoindex import AutoIndex
 
+import json
+
+# for verifying signature
+import hashlib
+import hmac
+
+def verify_signature(payload_body, secret_token, headers):
+    """Verify that the payload was sent from GitHub by validating SHA256.
+
+    Raise and return 403 if not authorized.
+
+    Args:
+        payload_body: original request body to verify (request.body())
+        secret_token: GitHub app webhook token (WEBHOOK_SECRET)
+        signature_header: header received from GitHub (x-hub-signature-256)
+    """
+       
+    if "X-Hub-Signature-256" not in headers:
+        return False
+    
+    hash_object = hmac.new(secret_token.encode('utf-8'), msg=payload_body, digestmod=hashlib.sha256)
+    expected_signature = "sha256=" + hash_object.hexdigest()
+    if not hmac.compare_digest(expected_signature, headers["X-Hub-Signature-256"]):
+        return False
+    return True
+
 log = Logger()
 
 UNAUTHORIZED = ("unauthorized", 401)
@@ -55,10 +81,11 @@ def webhook():
     '''
     log.info(f"New webhook from {request.remote_addr}")
     
-    authkey = app.config["AUTHKEY"] 
+    data = request.data
+
     # Make sure the authkey is correct.
-    authorized = "X-Hub-Signature-256" in request.headers 
-    authorized = authorized and request.headers["X-Hub-Signature-256"] == authkey 
+    authkey = app.config["AUTHKEY"]
+    authorized = verify_signature(data, authkey, request.headers)
     if not authorized:
         log.error(f"Invalid secret key from {request.remote_addr}")
         return UNAUTHORIZED
@@ -67,7 +94,7 @@ def webhook():
     
     # Try to get all the data needed
     try:
-        data = request.get_json()
+        data = json.loads(data.decode())
         ref           = data['ref']
         commit_id     = data['head_commit']['id']
         timestamp     = datetime.fromisoformat(data['head_commit']['timestamp'])
