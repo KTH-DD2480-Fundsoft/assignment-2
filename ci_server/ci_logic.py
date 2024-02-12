@@ -1,5 +1,6 @@
 import os
 import subprocess
+from ci_server.GitHub_API_functions import create_commit_status
 from ci_server.test_runner import run_tests
 from ci_server.logger import Logger
 
@@ -17,26 +18,31 @@ def continuous_integration(commit_hash):
     pull_repo(commit_hash)
 
     logger.info("Running tests")
-    output, error = run_tests()
+    errors, failures = run_tests()
     
     # TODO: Add better way of determining a successful run
-    successful_run = ("OK" in output or "OK" in error)
+    successful_run = not errors and not failures  
 
     build_dict = {"commit_id" : commit_hash}
     if successful_run:
         build_dict["success"] = True
         build_dict["status_msg"] = "Success"
+        commit_status = 'success'
     else:
         build_dict["success"] = False
-        build_dict["status_msg"] = error
+        build_dict["status_msg"] = errors + failures 
+        commit_status = 'error' if errors else 'failure'
 
     logger.log_build(build_dict)
 
     logger.info("Updating commit status")
-    update_commit_status(commit_hash, successful_run)
+    
+    #create_commit_status(commit_hash, commit_status)
 
     logger.info("Removing repository")
     remove_repo()
+
+    return successful_run
 
 def pull_repo(commit_hash):
     """
@@ -54,12 +60,6 @@ def remove_repo():
     """
     subprocess.run(["rm", "-rf", TMP_PATH])
 
-def update_commit_status(commit_hash, status):
-    """
-    Updates the commit status on the remote server
-    """
-    pass
-    
 
 if __name__ == "__main__":
     # Only used for debugging purposes
