@@ -34,6 +34,8 @@ class Logger():
         # Create a logger for standard log levels
         self.logger = logging.getLogger("Log")
         self.logger.setLevel(logging.DEBUG) # allows all log levels 
+        if not os.path.exists("log"):
+            os.makedirs("log", exist_ok=True)
         handler = logging.FileHandler(f"log/{filename}")
         formatter = logging.Formatter(log_str_format)
         handler.setFormatter(formatter)
@@ -42,6 +44,8 @@ class Logger():
         # Create a logger for BUILD level logs
         self.build_logger = logging.getLogger("Build")
         self.build_logger.setLevel(logging.INFO)  # Only allow INFO level for BUILD
+        if not os.path.exists("build_history"):
+            os.makedirs("build_history", exist_ok=True)
         build_handler = logging.FileHandler(f"build_history/build_{filename}")
         build_formatter = logging.Formatter(build_log_str_format)
         build_handler.setFormatter(build_formatter)
