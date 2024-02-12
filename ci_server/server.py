@@ -2,7 +2,7 @@ import os
 from flask import Flask, request 
 from ci_server.logger import Logger
 from datetime import datetime
-from ci_server.ci_logic import continuous_integration 
+from ci_server.ci_runner import continuous_integration 
 from multiprocessing import Process
 
 log = Logger()
@@ -15,9 +15,6 @@ app = Flask(__name__)
 app.config.from_prefixed_env(loads=lambda x: x)
 
 assert app.config["AUTHKEY"], "No authkey in ENV"
-
-def start_server(ip, port): 
-    app.run(host=ip,port=port)
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
