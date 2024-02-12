@@ -47,7 +47,7 @@ def continuous_integration(commit_hash):
 
     logger.info("Updating commit status")
     
-    #create_commit_status(commit_hash, commit_status)
+    create_commit_status(commit_hash, commit_status)
 
     logger.info("Removing repository")
     remove_repo()
