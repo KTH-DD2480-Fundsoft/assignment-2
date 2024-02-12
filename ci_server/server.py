@@ -37,13 +37,13 @@ def webhook():
     We only want to deal with GitHub webhooks, more specifically, only push and release
     events. See:
     
-    `this <https://docs.github.com/en/webhooks/webhook-events-and-payloads#push/>`_
+    `This <https://docs.github.com/en/webhooks/webhook-events-and-payloads#push/>`_
     and `this <https://docs.github.com/en/webhooks/webhook-events-and-payloads#release/>`_ 
     respectively.
 
 
     Parameters
-        ----------
+    ----------
     Returns
     ----------
     response : (`response`)
@@ -114,7 +114,7 @@ def index():
     when someone accesses example.org/ -- the 'home page'.
 
     Parameters
-        ----------
+    ----------
     Returns
     ----------
     response : (`response`)
