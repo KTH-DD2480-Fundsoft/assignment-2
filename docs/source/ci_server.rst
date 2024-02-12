@@ -12,10 +12,10 @@ ci\_server.GitHub\_API\_functions module
    :undoc-members:
    :show-inheritance:
 
-ci\_server.ci\_logic module
----------------------------
+ci\_server.ci\_runner module
+----------------------------
 
-.. automodule:: ci_server.ci_logic
+.. automodule:: ci_server.ci_runner
    :members:
    :undoc-members:
    :show-inheritance:
@@ -32,14 +32,6 @@ ci\_server.server module
 ------------------------
 
 .. automodule:: ci_server.server
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-ci\_server.test\_runner module
-------------------------------
-
-.. automodule:: ci_server.test_runner
    :members:
    :undoc-members:
    :show-inheritance:

@@ -35,37 +35,14 @@ class TestServer(unittest.TestCase):
     
     @property 
     def valid_authkey(self):
-        '''
-        
-        
-        Returns
-        -------
-        self.new_authkey: (str)
-            
-        ''' 
         return self.new_authkey
 
     @property 
     def invalid_authkey(self): 
-        '''
-        
-
-        Returns
-        -------
-            "letmein": (str)
-        '''
         return "letmein"
     
     @property
     def valid_data(self):
-        '''
-        
-
-        Returns 
-        -------
-        data: (dict)
-            A dictionary containing branch, commit, and push info.
-        '''
         data = {} 
         data['ref'] = "ref/this/branch/doesnt/exist"
         data['head_commit'] = {
