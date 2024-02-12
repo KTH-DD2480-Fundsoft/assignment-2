@@ -2,7 +2,7 @@ import os
 from flask import Flask, request 
 from ci_server.logger import Logger
 from datetime import datetime
-from ci_server.ci_logic import continuous_integration 
+from ci_server.ci_runner import continuous_integration 
 from multiprocessing import Process
 from flask_autoindex import AutoIndex
 
@@ -21,9 +21,6 @@ build_path = "./build_history" # Relative path to the build history directory
 AutoIndex(app, browse_root=build_path) 
 
 assert app.config["AUTHKEY"], "No authkey in ENV"
-
-def start_server(ip, port): 
-    app.run(host=ip,port=port)
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
