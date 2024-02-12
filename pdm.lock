@@ -5,7 +5,7 @@
 groups = ["default", "docs"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:c30cba0db4792de11c25ba019188f3e3a8d9957d604dba2569a0b250a844d778"
+content_hash = "sha256:4eb07351694ca44e6f5efb96fd4944a7ea1061d4bc10739e70d81d6576bb1f0c"
 
 [[package]]
 name = "alabaster"
@@ -194,6 +194,42 @@ dependencies = [
 files = [
     {file = "flask-3.0.2-py3-none-any.whl", hash = "sha256:3232e0e9c850d781933cf0207523d1ece087eb8d87b23777ae38456e2fbe7c6e"},
     {file = "flask-3.0.2.tar.gz", hash = "sha256:822c03f4b799204250a7ee84b1eddc40665395333973dfb9deebfe425fefcb7d"},
+]
+
+[[package]]
+name = "flask-autoindex"
+version = "0.6.6"
+summary = "The mod_autoindex for Flask"
+groups = ["default"]
+dependencies = [
+    "Flask-Silk>=0.2",
+    "Flask>=1.1",
+    "future>=0.13.0",
+]
+files = [
+    {file = "Flask-AutoIndex-0.6.6.tar.gz", hash = "sha256:ea319f7ccadf68ddf98d940002066278c779323644f9944b300066d50e2effc7"},
+]
+
+[[package]]
+name = "flask-silk"
+version = "0.2"
+summary = "Adds silk icons to your Flask application or blueprint, or extension."
+groups = ["default"]
+dependencies = [
+    "Flask>=0.8",
+]
+files = [
+    {file = "Flask-Silk-0.2.tar.gz", hash = "sha256:80a21faf09fe257443a4fbbf8cd3f6c793c567c87ff784751a1c38d2e18b5fbe"},
+]
+
+[[package]]
+name = "future"
+version = "0.18.3"
+requires_python = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+summary = "Clean single-source support for Python 3 and 2"
+groups = ["default"]
+files = [
+    {file = "future-0.18.3.tar.gz", hash = "sha256:34a17436ed1e96697a86f9de3d15a3b0be01d8bc8de9c1dffd59fb8234ed5307"},
 ]
 
 [[package]]

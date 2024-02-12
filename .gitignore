@@ -21,4 +21,7 @@ __pycache__/
 # Builds of the docs
 docs/build/*
 
+# CI related directories
+build_history/
+log/
 tmp/
