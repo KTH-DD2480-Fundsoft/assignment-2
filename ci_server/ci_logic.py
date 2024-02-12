@@ -8,8 +8,8 @@ from ci_server.logger import Logger
 Contains logic for the the continuous integration server
 """
 
-CURRENT_PATH = os.path.abspath(__file__)
-TMP_PATH = os.path.join(os.path.dirname(CURRENT_PATH), "../tmp/")
+PROJ_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TMP_PATH = os.path.join(PROJ_ROOT, "tmp/")
 
 def continuous_integration(commit_hash):
     logger = Logger()
@@ -37,7 +37,7 @@ def continuous_integration(commit_hash):
 
     logger.info("Updating commit status")
     
-    #create_commit_status(commit_hash, commit_status)
+    create_commit_status(commit_hash, commit_status)
 
     logger.info("Removing repository")
     remove_repo()
@@ -52,13 +52,17 @@ def pull_repo(commit_hash):
 
     subprocess.run(["git", "clone", repo_url, TMP_PATH])
     os.chdir(TMP_PATH)
-    subprocess.run(["git", "checkout", commit_hash])
+    try: 
+        subprocess.run(["git", "checkout", commit_hash])
+    finally: 
+        os.chdir(PROJ_ROOT)
 
 def remove_repo():
     """
     Removes the repository from the local server
     """
     subprocess.run(["rm", "-rf", TMP_PATH])
+    subprocess.run(["mkdir", TMP_PATH])
 
 
 if __name__ == "__main__":

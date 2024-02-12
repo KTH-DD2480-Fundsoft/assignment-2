@@ -7,12 +7,17 @@ import os
 import subprocess
 import ast 
 
-CURRENT_PATH = os.path.abspath(__file__)
-TMP_CI_PATH = os.path.join(os.path.dirname(CURRENT_PATH), "../tmp/")
+PROJ_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TMP_PATH = os.path.join(PROJ_ROOT, "tmp/")
 
 def run_tests():
-    os.chdir(TMP_CI_PATH)
-    cmd = ['python3', "test.py"]
-    result = subprocess.run(cmd, stdout=subprocess.PIPE)
-    errors, failures = ast.literal_eval(result.stdout.decode("utf-8"))
-    return errors, failures 
+    os.chdir(TMP_PATH)
+    errors = ["INTERNAL FAILURE"]
+    failures = []
+    try:
+        cmd = ['python3', "test.py"]
+        result = subprocess.run(cmd, stdout=subprocess.PIPE)
+        errors, failures = ast.literal_eval(result.stdout.decode("utf-8"))
+    finally:
+        os.chdir(PROJ_ROOT)
+        return errors, failures 
