@@ -11,6 +11,16 @@ CURRENT_PATH = os.path.abspath(__file__)
 TMP_PATH = os.path.join(os.path.dirname(CURRENT_PATH), "../tmp/")
 
 def continuous_integration(commit_hash):
+    """
+    Runs the continous integration process on a `commit_hash`, where the repository
+    is pulled, tests are executed, the results are logged and the commit status is
+    updated.
+
+    Parameters
+    ----------
+    `commit_hash`: (`str`)
+        The hash of the commit that is currently being tested on the CI server.
+    """
     logger = Logger()
     
     logger.info(f"Pulling repository with hash {commit_hash}")
@@ -40,7 +50,12 @@ def continuous_integration(commit_hash):
 
 def pull_repo(commit_hash):
     """
-    Pulls the repository from the remote server
+    Clones the repository from the remote server.
+
+    Parameters
+    ----------
+    `commit_hash`: (`str`)
+        The hash id of the commit that is currently being tested on the CI server.
     """
     repo_url = "git@github.com:KTH-DD2480-Fundsoft/assignment-2.git"
 
