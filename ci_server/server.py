@@ -88,8 +88,6 @@ def webhook():
     if not authorized:
         log.error(f"Invalid secret key from {request.remote_addr}")
         return UNAUTHORIZED
-    # Make sure data is JSON
-    if not request.is_json: return BAD_REQUEST 
     
     # Try to get all the data needed
     try:
@@ -99,7 +97,8 @@ def webhook():
         timestamp     = datetime.fromisoformat(data['head_commit']['timestamp'])
         commit_author = data['head_commit']['author']
         pusher        = data['pusher']['name'] 
-    # All the above data is required, bad data otherwise
+    
+   # All the above data is required, bad data otherwise
     except KeyError as e:
         log.error(str(e))
         return BAD_REQUEST 
