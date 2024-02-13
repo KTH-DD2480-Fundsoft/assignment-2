@@ -39,13 +39,12 @@ INTERNAL_ERROR = ("internal error", 500)
 
 app = Flask(__name__)
 app.config.from_prefixed_env(loads=lambda x: x)
-
 build_path = "./build_history" # Relative path to the build history directory
-
 # Show the files in the build history directory
 AutoIndex(app, browse_root=build_path) 
+assert app.config["AUTHKEY"], "No authkey in ENV!"
+assert app.config["TESTING"] == "true" or app.config["SECRET_KEY"], "Secret key not set and not in testing mode!"
 
-assert app.config["AUTHKEY"], "No authkey in ENV"
 
 @app.route('/webhook', methods=['POST'])
 def webhook():

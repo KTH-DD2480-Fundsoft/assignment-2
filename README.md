@@ -1,6 +1,6 @@
 # Assignment-2 - A Continuous Integration server
 
-This ia a small continuous integration server built using the flask package in Python, GitHub Webhooks, and the GitHub REST API.
+This is a small continuous integration server built using the Flask package in Python, GitHub Webhooks, and the GitHub REST API. The list of past builds can be found at https://prompt-possum-first.ngrok-free.app/
 
 ## Instructions for running
 [PDM](https://pypi.org/project/pdm/) is required for running the server and the server tests. [PDM](https://pypi.org/project/pdm/) can be installed via `pip` with the command 
@@ -18,11 +18,26 @@ Once PDM is configured, the tests are run with the command
 pdm run test
 ```
 
+The tests are implemented using the unittest module in python. The package compileAll is used to do the static syntax check of all files related to the server. Additionally, there are tests for continuous integration, GitHub REST API, logger, and for the Flask server. These can all be found in test_ci_server.
+
 ### Running the server
-The server is run with the command
+A dev server can be run using
 ```
-pdm run ci-server
+pdm run dev-server
 ```
+
+and a prod server can be run using
+
+```
+pdm run prod-server
+```
+
+Ngrok is used for tunnelling the traffic between our [domain](https://prompt-possum-first.ngrok-free.app/) and the server running on KTH's server. This tunnelling is set up with the command
+
+```
+pdm run ngrok
+```
+ 
 ### Generating the documentation
 The documentation is generated with the command
 ```
@@ -127,7 +142,7 @@ was done in an ad-hoc manner.
 ### Issues
 [Documentation of API functions](https://github.com/KTH-DD2480-Fundsoft/assignment-2/issues/45)
 [Bug in the CI server](https://github.com/KTH-DD2480-Fundsoft/assignment-2/issues/32)
-[File bug in the CI server](FileNotFoundError when running ci_logic.py)
+[File bug in the CI server](https://github.com/KTH-DD2480-Fundsoft/assignment-2/issues/32)
 [Package management for the CI server](https://github.com/KTH-DD2480-Fundsoft/assignment-2/issues/13)
 
 

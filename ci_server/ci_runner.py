@@ -12,7 +12,7 @@ PROJ_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TMP_PATH = os.path.abspath(os.path.join(PROJ_ROOT, "tmp/"))
 
 def continuous_integration(commit_hash):
-    """
+    '''
         Runs the continous integration process for the commit identified by
         `commit_hash`, where the repository is cloned, tests are executed,
         the results are logged and the commit status is updated. The results
@@ -27,37 +27,43 @@ def continuous_integration(commit_hash):
         ----------
         `successful_run` : (`bool`)
             `True` if the CI was successful, otherwise `False`.
-    """
+    '''
+    try:
+        
+        log.info(f"Pulling repository with hash {commit_hash}")
+        pull_repo(commit_hash)
     
-    log.info(f"Pulling repository with hash {commit_hash}")
-    pull_repo(commit_hash)
+        log.info("Running tests")
+        errors, failures = run_tests()
+        print(errors,failures) 
+        # TODO: Add better way of determining a successful run
+        successful_run = not errors and not failures  
 
-    log.info("Running tests")
-    errors, failures = run_tests()
-    print(errors,failures) 
-    successful_run = not errors and not failures  
+        build_dict = {"commit_id" : commit_hash}
+        if successful_run:
+            build_dict["success"] = True
+            build_dict["status_msg"] = "Success"
+            commit_status = 'success'
+        else:
+            build_dict["success"] = False
+            build_dict["status_msg"] = '\n'.join(errors + failures)
+            commit_status = 'error' if errors else 'failure'
 
-    build_dict = {"commit_id" : commit_hash}
-    if successful_run:
-        build_dict["success"] = True
-        build_dict["status_msg"] = "Success"
-        commit_status = 'success'
-    else:
-        build_dict["success"] = False
-        build_dict["status_msg"] = '\n'.join(errors + failures)
-        commit_status = 'error' if errors else 'failure'
+        log.log_build(build_dict)
 
-    log.log_build(build_dict)
+        log.info("Updating commit status")
+        
+        create_commit_status(commit_hash, commit_status)
 
-    log.info("Updating commit status")
-    
-    create_commit_status(commit_hash, commit_status)
+        log.info("Removing repository")
+        remove_repo()
 
-    log.info("Removing repository")
-    remove_repo()
-
-    return successful_run
-
+        return successful_run
+    except Exception as e:
+        log.error(f"Fatal error: {str(e)}\n\t sending error to GH.")
+        try: create_commit_status(commit_hash,"error")
+        except Exception as ce: log.error(commit_hash, "failed to send error!")
+        finally: return False
 def run_tests():
     ''' 
         Call the `test_runner` package of the remote repository and parse
@@ -80,7 +86,7 @@ def run_tests():
         os.chdir(TMP_PATH)
         result = subprocess.run(cmd, stdout=subprocess.PIPE)
         print(result.stdout.decode("utf-8"))
-        errors, failures = literal_eval(result.stdout.decode("utf-8"))
+        errors, failures = literal_eval(result.stdout.decode("utf-8").splitlines()[-1])
     except Exception as e:
         errors, failures = ([f"INTERNAL FAILURE: {str(e)}"],[])
     finally:
