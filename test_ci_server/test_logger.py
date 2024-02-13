@@ -1,19 +1,3 @@
-# #######################################################
-# # added this block to solve ModuleNotFoundError
-# #######################################################
-# import sys
-# import os
-# # Get the absolute path of the parent directory
-# project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-# # Add the parent directory to sys.path
-# sys.path.append(project_dir)
-# # Print out sys.path to verify that the directory has been added
-# # print(sys.path)
-# #######################################################
-
-
-
-
 from datetime import datetime, timedelta
 import unittest
 import ci_server.logger
@@ -37,20 +21,21 @@ class TestLogger(unittest.TestCase):
         self.build_dir = 'build_history'
 
         build_files = os.listdir(self.build_dir)
-
         if not build_files:
             self.fail(f'no directory "{self.build_dir}" found')
-        
         build_files.sort(reverse=True)  # Sort files in reverse alphabetical order
-        self.latest_build_file = build_files[0]
-
+        self.latest_build_file = build_files[0] # The name of the file last in alphabetical order in 'build_history', the one most recently created
 
         self.build_file_path = os.path.join(self.build_dir, self.latest_build_file) # latest build file path
         self.log_file_path = datetime.now().strftime("log/%Y-%m-%d.test.log")
-        
+
 
     
     def test_latest_build_log_file_path(self):
+        ''' 
+            Test that the file last in alphabetical order in the dir `build_history`
+            was created no more than 10 milliseconds ago
+        '''
 
         # Extract timestamp from filename
         filename_parts = self.latest_build_file[6:32] # extract only the time stamp part of the file name
@@ -126,6 +111,9 @@ class TestLogger(unittest.TestCase):
         data = f.read() 
         f.close()
         self.assertTrue("SUCCESS" in data and "123456" in data and "some message" in data)
-
+    
     def tearDown(self):
+        ''' 
+            Clears the content of the test log file
+        '''
         open(self.log_file_path, 'w').close()

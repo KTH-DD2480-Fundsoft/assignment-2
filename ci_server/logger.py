@@ -2,9 +2,6 @@ if __name__ == '__main__': exit()
 
 import logging
 from datetime import datetime
-
-
-
 import os
 
 class InfoOnlyFilter(logging.Filter):
@@ -55,7 +52,6 @@ class Logger():
 
         # The log message format
         log_str_format = '%(asctime)s - %(levelname)s: %(message)s'
-        # build_log_str_format = '%(asctime)s: %(message)s' # Remove INFO string from printout
 
         # Create a logger for standard log levels
         self.logger = logging.getLogger("Log")
@@ -79,10 +75,6 @@ class Logger():
             Close all handlers. Use with care, mainly for testing purposes.
         '''
         
-        # for handler in self.logger.handlers + self.build_logger.handlers:
-        #     handler.close()
-
-        # test: trying to find why I get AttributeError: 'Logger' object has no attribute 'build_logger'
         handlers_to_close = self.logger.handlers
         if hasattr(self, 'build_logger'):
             handlers_to_close += self.build_logger.handlers
