@@ -67,9 +67,8 @@ def create_commit_status(commit_hash, status):
     ----------
     `returned_status_code` : (`int`)
       The status code of the POST request. `201` if the update could be made.
-    TODO: Add parameter type.
-    `returned_set_state` : (`?`)
-      The state of the POST request, or a message if `returned_status_code` is not `201`.
+    `returned_set_state` : (`str`)
+      The echoed state of the commit status from the POST request, or a message if `returned_status_code` is not `201`.
   '''
 
   # GitHub parameters
