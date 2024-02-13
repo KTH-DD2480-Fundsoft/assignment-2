@@ -13,6 +13,7 @@ dependencies = [
     "flask>=3.0.2",
     "requests>=2.31.0",
     "Flask-AutoIndex>=0.6.6",
+    "waitress>=3.0.0",
 ]
 requires-python = ">=3.8"
 readme = "README.md"
@@ -28,12 +29,15 @@ distribution = true
 
 [tool.pdm.scripts]
 # Source running
-ci-server = "python -m ci_server"
+dev-server = "python -m ci_server"
+prod-server = "waitress-serve --host 127.0.0.1 --port 8027 --url-scheme=https ci_server.server:app" 
+ngrok = "ngrok http --domain=prompt-possum-first.ngrok-free.app 8027"
 # Docs generation
 gen-autodocs = "sphinx-apidoc -o docs/source ."
 build-docs = {shell = "cd docs && make html"}
 docs = {composite = ["gen-autodocs", "build-docs"]}
 test = "python -m test_runner"
+
 
 [tool.pdm.dev-dependencies]
 docs = [
