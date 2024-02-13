@@ -70,9 +70,9 @@ def run_tests():
 
         Returns
         ----------
-        `errors` : (`list<string>`)
+        `errors` : (`list[str]`)
             List containing potential error strings from the tests
-        `failures` : (`list<string>`)
+        `failures` : (`list[str]`)
             List containing potential failure strings from the tests
     '''
 
