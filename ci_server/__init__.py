@@ -1,6 +1,6 @@
 import os
 from ci_server.logger import Logger 
 log = Logger()
-github_owner = "KTH-DD2480-Fundsoft"
-github_repo  = "assignment-2"
-github_token = os.environ["GitHub_token"]
+GH_OWNER = "KTH-DD2480-Fundsoft"
+GH_REPO  = "assignment-2"
+GH_TOKEN = os.environ["GitHub_token"]
