@@ -3,8 +3,16 @@ from ci_server.GitHub_API_functions import create_commit_status
 
 
 class TestGitHubAPIFunctions(unittest.TestCase):
-    
+    '''
+        Class containing tests for `ci_server/GitHub_API_functions.py` which interfaces
+        with GitHub's REST API.
+    '''
+
     def test_commit_status_success(self):
+        '''
+            Tests that the status of the initial commit can be set to "success".
+        '''
+
         # Commit hash corresponds to "Intial commit" in assignment 2 repository
         commit_hash = "00ba07dbe885385f308741a4bc70e1c866f2da7f"
         status = "success"
@@ -13,6 +21,10 @@ class TestGitHubAPIFunctions(unittest.TestCase):
         self.assertEqual(returned_set_state, status) # Check that the POST request set the right commit status
 
     def test_commit_status_failure(self):
+        '''
+            Tests that the status of the initial commit can be set to "failure".
+        '''
+
         # Commit hash corresponds to "Intial commit" in assignment 2 repository
         commit_hash = "00ba07dbe885385f308741a4bc70e1c866f2da7f"
         status = "failure"
@@ -21,6 +33,10 @@ class TestGitHubAPIFunctions(unittest.TestCase):
         self.assertEqual(returned_set_state, status) # Check that the POST request set the right commit status
 
     def test_commit_status_error(self):
+        '''
+            Tests that the status of the initial commit can be set to "error".
+        '''
+
         # Commit hash corresponds to "Intial commit" in assignment 2 repository
         commit_hash = "00ba07dbe885385f308741a4bc70e1c866f2da7f"
         status = "error"
@@ -29,6 +45,10 @@ class TestGitHubAPIFunctions(unittest.TestCase):
         self.assertEqual(returned_set_state, status) # Check that the POST request set the right commit status
     
     def test_commit_status_pending(self):
+        '''
+            Tests that the status of the initial commit can be set to "pending".
+        '''
+
         # Commit hash corresponds to "Intial commit" in assignment 2 repository
         commit_hash = "00ba07dbe885385f308741a4bc70e1c866f2da7f"
         status = "pending"
@@ -37,6 +57,11 @@ class TestGitHubAPIFunctions(unittest.TestCase):
         self.assertEqual(returned_set_state, status) # Check that the POST request set the right commit status
     
     def test_error_handling(self):
+        '''
+            Tests that the status of a non-existing commit cannot be changed and that the correct
+            error message is returned.
+        '''
+
         commit_hash = "40"
         status = "pending"
         error_message = 'No commit found for SHA: 40'
