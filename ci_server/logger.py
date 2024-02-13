@@ -34,7 +34,8 @@ class Logger():
             Parameters
             ----------
             `test` : (`bool`)
-                TODO: Write explanation.
+                bool determining if the Logger is run in a test enviornment or not.
+                If true, store the logs in a separate .test.log file
         """
         test_str = ".test" if test else ""
         filename = datetime.now().strftime(f"%Y-%m-%d{test_str}.log")

@@ -37,7 +37,6 @@ def continuous_integration(commit_hash):
     logger.info("Running tests")
     errors, failures = run_tests()
     print(errors,failures) 
-    # TODO: Add better way of determining a successful run
     successful_run = not errors and not failures  
 
     build_dict = {"commit_id" : commit_hash}
@@ -66,17 +65,12 @@ def run_tests():
         Call the `test_runner` package of the remote repository and parse
         the results.
 
-
-        Parameters
-        ----------
-
         Returns
         ----------
-        TODO: Document parameter types.
-        `errors` : (`?`)
-            TODO: Write explanation.
-        `failures` : (`?`)
-            TODO: Write explanation.
+        `errors` : (`list<string>`)
+            List containing potential error strings from the tests
+        `failures` : (`list<string>`)
+            List containing potential failure strings from the tests
     '''
 
     cmd = ['python3',"-m", "test_runner"]
@@ -90,6 +84,10 @@ def run_tests():
         errors, failures = ([f"INTERNAL FAILURE: {str(e)}"],[])
     finally:
         os.chdir(PROJ_ROOT)
+        print("errors type", type(errors))
+        print("errors", errors)
+        print("failures type", type(failures))
+        print("failures", failures)
         return errors, failures 
 
 def pull_repo(commit_hash):

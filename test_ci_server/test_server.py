@@ -13,12 +13,6 @@ class TestServer(unittest.TestCase):
     def setUpClass(cls) -> None:
         '''
             Hook method for setting up class fixture before running tests in the class.
-
-            Parameters
-            ----------
-            TODO: Add parameter type.
-            `cls` : (`?`)
-                TODO: Write explanation.
         '''
 
         cls.ip = "0.0.0.0"
@@ -44,7 +38,7 @@ class TestServer(unittest.TestCase):
     @property 
     def valid_authkey(self):
         '''
-            TODO: Write explanation.
+            Property returning the valid AUTHKEY
 
             Parameters
             ----------
@@ -52,7 +46,7 @@ class TestServer(unittest.TestCase):
             Returns
             -------
             `self.new_authkey` : (`str`)
-                TODO: Write explanation.
+                Valid AUTHKEY
         '''
 
         return self.new_authkey
@@ -60,7 +54,7 @@ class TestServer(unittest.TestCase):
     @property 
     def invalid_authkey(self): 
         '''
-            TODO: Write explanation.
+            Property returning an invalid AUTHKEY
 
             Parameters
             ----------
@@ -76,7 +70,7 @@ class TestServer(unittest.TestCase):
     @property
     def valid_data(self):
         '''
-            TODO: Write explanation.
+            Property returning data with valid JSON commit data
 
             Parameters
             ----------
@@ -170,12 +164,6 @@ class TestServer(unittest.TestCase):
     def tearDownClass(cls) -> None:
         '''
             Hook method for deconstructing the class fixture after running all tests in the class.
-
-            Parameters
-            ----------
-            TODO: Add parameter type.
-            `cls` : (`?`)
-                TODO: Write explanation.
         '''
 
         cls.server.terminate()
