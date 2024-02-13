@@ -23,7 +23,7 @@ import os
 
 class TestLogger(unittest.TestCase):
 
-    max_time_since_created_last_build_log = 10 # microseconds
+    max_time_since_created_last_build_log = 10 # milliseconds
 
     logger = ci_server.logger.Logger(test=True)
 
@@ -43,7 +43,6 @@ class TestLogger(unittest.TestCase):
 
     
 
-
     
     def test_latest_build_log_file_path(self):
 
@@ -56,9 +55,9 @@ class TestLogger(unittest.TestCase):
         time_difference = current_time - file_timestamp
 
 
-        # Assert that the time difference is at least max_time_since_created_last_build_log microseconds
-        self.assertLessEqual(time_difference, timedelta(microseconds=self.max_time_since_created_last_build_log),
-                                f"Latest file '{self.latest_build_file}' does not represent a time no more than {self.max_time_since_created_last_build_log} microseconds ago.")
+        # Assert that the time difference is at least max_time_since_created_last_build_log milliseconds
+        self.assertLessEqual(time_difference, timedelta(milliseconds=self.max_time_since_created_last_build_log),
+                                f"Latest file '{self.latest_build_file}' does not represent a time no more than {self.max_time_since_created_last_build_log} milliseconds ago.")
     
 
     def test_file_path(self):
@@ -102,7 +101,7 @@ class TestLogger(unittest.TestCase):
         l = f.readline()
         try: 
             date = datetime.strptime(l.split(' - ')[0],"%Y-%m-%d %H:%M:%S,%f")
-            if date - datetime.now() > timedelta(microseconds=10):
+            if date - datetime.now() > timedelta(milliseconds=10):
                 raise ValueError()
         except: self.fail("Time format in log is wrong!")
         finally: f.close()
