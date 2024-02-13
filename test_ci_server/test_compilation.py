@@ -12,5 +12,5 @@ class CompilationTests(unittest.TestCase):
             this test fails.
         '''
 
-        res = compileall.compile_dir("ci_server", force=True)
+        res = compileall.compile_dir("ci_server", force=True, quiet=1)
         self.assertTrue(res, msg="Failed to compile the file sin ci_server")

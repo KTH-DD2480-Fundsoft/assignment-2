@@ -80,7 +80,7 @@ def run_tests():
         os.chdir(TMP_PATH)
         result = subprocess.run(cmd, stdout=subprocess.PIPE)
         print(result.stdout.decode("utf-8"))
-        errors, failures = literal_eval(result.stdout.decode("utf-8"))
+        errors, failures = literal_eval(result.stdout.decode("utf-8").splitlines()[-1])
     except Exception as e:
         errors, failures = ([f"INTERNAL FAILURE: {str(e)}"],[])
     finally:
