@@ -49,34 +49,34 @@ assert app.config["TESTING"] == "true" or app.config["SECRET_KEY"], "Secret key 
 @app.route('/webhook', methods=['POST'])
 def webhook():
     '''
-    See flask docs: https://flask.palletsprojects.com/en/latest/quickstart/#routing
-    
-    This function is run when there is a HTTP request directed at this server at 
-    route '/webhook', so if our server is at example.org. This is run when someone
-    accesses example.org/webhook.
-
-    We only want to deal with GitHub webhooks, more specifically, only push and release
-    events. See:
-    
-    `This <https://docs.github.com/en/webhooks/webhook-events-and-payloads#push/>`_
-    and `this <https://docs.github.com/en/webhooks/webhook-events-and-payloads#release/>`_ 
-    respectively.
-
-
-    Parameters
-    ----------
-    Returns
-    ----------
-    response : (`response`)
-        See: https://flask.palletsprojects.com/en/latest/quickstart/#about-responses
+        See flask docs: https://flask.palletsprojects.com/en/latest/quickstart/#routing
         
-        The return value -- if valid -- is automatically converted to a response object,
-        a bad response must therefore be specified by returning a tuple, where the second
-        element is the return code.
+        This function is run when there is a HTTP request directed at this server at 
+        route `/webhook`, so if our server is at example.org. This is run when someone
+        accesses example.org/webhook.
 
-        This function, however, should only return JSON and a return-code.
+        We only want to deal with GitHub webhooks, more specifically, only push and release
+        events. See:
+        
+        `This <https://docs.github.com/en/webhooks/webhook-events-and-payloads#push/>`_
+        and `this <https://docs.github.com/en/webhooks/webhook-events-and-payloads#release/>`_ 
+        respectively.
 
+        Parameters
+        ----------
+
+        Returns
+        ----------
+        `response` : (`response`)
+            See: https://flask.palletsprojects.com/en/latest/quickstart/#about-responses
+            
+            The return value -- if valid -- is automatically converted to a response object,
+            a bad response must therefore be specified by returning a tuple, where the second
+            element is the return code.
+
+            This function, however, should only return JSON and a return-code.
     '''
+
     log.info(f"New webhook from {request.remote_addr}")
     
     data = request.data
@@ -87,8 +87,6 @@ def webhook():
     if not authorized:
         log.error(f"Invalid secret key from {request.remote_addr}")
         return UNAUTHORIZED
-    # Make sure data is JSON
-    if not request.is_json: return BAD_REQUEST 
     
     # Try to get all the data needed
     try:
@@ -98,7 +96,8 @@ def webhook():
         timestamp     = datetime.fromisoformat(data['head_commit']['timestamp'])
         commit_author = data['head_commit']['author']
         pusher        = data['pusher']['name'] 
-    # All the above data is required, bad data otherwise
+    
+   # All the above data is required, bad data otherwise
     except KeyError as e:
         log.error(str(e))
         return BAD_REQUEST 
@@ -129,25 +128,25 @@ def webhook():
 @app.route('/', methods=['GET'])
 def index():
     ''' 
-    See flask docs: https://flask.palletsprojects.com/en/latest/quickstart/#routing
-    
-    This function is run when there is a HTTP request directed at this server at 
-    route '/', i.e., at the index, so if our server is at example.org. This is run 
-    when someone accesses example.org/ -- the 'home page'.
-
-    Parameters
-    ----------
-    Returns
-    ----------
-    response : (`response`)
-        See: https://flask.palletsprojects.com/en/latest/quickstart/#about-responses
+        See flask docs: https://flask.palletsprojects.com/en/latest/quickstart/#routing
         
-        The return value -- if valid -- is automatically converted to a response object,
-        a bad response must therefore be specified by returning a tuple, where the second
-        element is the return code.
+        This function is run when there is a HTTP request directed at this server at 
+        route `/`, i.e., at the index, so if our server is at example.org. This is run 
+        when someone accesses example.org/ -- the 'home page'.
 
-        This function, however, should only return text/html and a return-code.
+        Parameters
+        ----------
 
+        Returns
+        ----------
+        `response` : (`response`)
+            See: https://flask.palletsprojects.com/en/latest/quickstart/#about-responses
+            
+            The return value -- if valid -- is automatically converted to a response object,
+            a bad response must therefore be specified by returning a tuple, where the second
+            element is the return code.
+
+            This function, however, should only return text/html and a return-code.
     ''' 
     return (""" 
 <h1> Under construction </h1>
@@ -159,5 +158,16 @@ def index():
 <br>
         """, 200)
 
-def start_server(ip,port): 
+def start_server(ip,port):
+    """
+        Runs the server at the IP `ip` and the port `port`.
+
+        Parameters
+        ----------
+        `ip` : (`str`)
+            The IP at which the server should run.
+        `port` : (`int`)
+            The port number at which the server should run.
+    """
+    
     app.run(host=ip,port=port)
