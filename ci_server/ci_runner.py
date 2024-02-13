@@ -22,7 +22,6 @@ def continuous_integration(commit_hash):
         :return: Whether the CI was successful or not.
         :rtype: bool
     '''
-    logger = Logger()
     
     log.info(f"Pulling repository with hash {commit_hash}")
     pull_repo(commit_hash)
