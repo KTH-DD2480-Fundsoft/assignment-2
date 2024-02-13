@@ -1,3 +1,4 @@
+from ci_server import log
 import requests
 from requests.auth import HTTPBasicAuth
 import os
@@ -100,8 +101,10 @@ def create_commit_status(commit_hash, status):
   # returns status code and state that was set/potential error message from POST request response
   returned_status_code = post_response.status_code
   if post_response.status_code == 201:
+    log.info("successfully set commit status")
     returned_set_state   = post_response.json()["state"]
-  elif post_response.status_code != 201:
+  else:
+    log.error(f"setting commit status failed! {post_response.status_code}")
     returned_set_state   = post_response.json()["message"]
   
   return returned_status_code, returned_set_state
