@@ -1,7 +1,7 @@
+from ci_server import log
 import os
 import subprocess
 from ci_server.GitHub_API_functions import create_commit_status
-from ci_server.logger import Logger
 from ast import literal_eval
 """
 Contains logic for the the continuous integration server
@@ -24,10 +24,10 @@ def continuous_integration(commit_hash):
     '''
     logger = Logger()
     
-    logger.info(f"Pulling repository with hash {commit_hash}")
+    log.info(f"Pulling repository with hash {commit_hash}")
     pull_repo(commit_hash)
 
-    logger.info("Running tests")
+    log.info("Running tests")
     errors, failures = run_tests()
     print(errors,failures) 
     # TODO: Add better way of determining a successful run
@@ -43,13 +43,13 @@ def continuous_integration(commit_hash):
         build_dict["status_msg"] = '\n'.join(errors + failures)
         commit_status = 'error' if errors else 'failure'
 
-    logger.log_build(build_dict)
+    log.log_build(build_dict)
 
-    logger.info("Updating commit status")
+    log.info("Updating commit status")
     
     create_commit_status(commit_hash, commit_status)
 
-    logger.info("Removing repository")
+    log.info("Removing repository")
     remove_repo()
 
     return successful_run
