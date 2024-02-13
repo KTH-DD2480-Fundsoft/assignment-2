@@ -65,6 +65,9 @@ def run_tests():
         Call the `test_runner` package of the remote repository and parse
         the results.
 
+        Parameters
+        ----------
+
         Returns
         ----------
         `errors` : (`list<string>`)
