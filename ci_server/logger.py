@@ -13,17 +13,42 @@ class InfoOnlyFilter(logging.Filter):
         build_logger can only log at INFO level
     '''
     def filter(self, record):
+        '''
+            Filter method for enforcing that build_logger
+            logs at INFO level. 
+
+            Parameters
+            ----------
+            `record` : (`LogRecord`)
+                The LogRecord that is being enforced.
+
+            Returns
+            -------
+            `record.levelno == logging.INFO` : (`bool`)
+                Boolean value enforcing the logging level.
+        '''
         return record.levelno == logging.INFO
 
 
 class Logger():
     ''' 
         A Logger class providing functions that log
-        directly to 'log/<date>.log' with timestamps
+        directly to `log/<date>.log` with timestamps
         and different logging levels. 
     '''
 
     def __init__(self, test=False):
+        """
+            Constructs a `Logger` which is simply a wrapper for two loggers from the
+            module `logging`, named `Log` and `Build`, which will add their logging
+            into their respective directories `log/` and `build_history/`.
+
+            Parameters
+            ----------
+            `test` : (`bool`)
+                bool determining if the Logger is run in a test enviornment or not.
+                If true, store the logs in a separate .test.log file
+        """
         self.test_str = ".test" if test else ""
         filename = datetime.now().strftime(f"%Y-%m-%d{self.test_str}.log") # for general logs
         # build_filename = datetime.now().strftime(f"%Y-%m-%d_%H-%M-%S-%f{test_str}.txt") # for builds, favorable for displaying in browser if each build has its own txt file
@@ -50,7 +75,10 @@ class Logger():
         self._close()
 
     def _close(self):
-        ''' Close all handlers. Use with care, mainly for testing purposes. '''
+        '''
+            Close all handlers. Use with care, mainly for testing purposes.
+        '''
+        
         # for handler in self.logger.handlers + self.build_logger.handlers:
         #     handler.close()
 
@@ -62,35 +90,72 @@ class Logger():
             handler.close()
 
     def debug(self, msg, *args): 
-        ''' Log message at level DEBUG '''   
+        '''
+            Log message `msg` at the DEBUG level.
+
+            Parameters
+            ----------
+            `msg` : (`str`)
+                The message to log.
+        '''
+
         self.logger.debug(msg, *args)
 
     def info(self, msg, *args):    
-        ''' Log message at level INFO'''
+        '''
+            Log message `msg` at the INFO level.
+
+            Parameters
+            ----------
+            `msg` : (`str`)
+                The message to log.
+        '''
+
         self.logger.info(msg, *args)
 
     def warning(self, msg, *args): 
-        ''' Log message at level WARNING'''   
+        '''
+            Log message `msg` at the WARNING level.
+
+            Parameters
+            ----------
+            `msg` : (`str`)
+                The message to log.
+        '''
+
         self.logger.warning(msg, *args)
 
     def error(self, msg, *args):   
-        ''' Log message at level ERROR'''   
+        '''
+            Log message at the ERROR level.
+
+            Parameters
+            ----------
+            `msg` : (`str`)
+                The message to log.
+        '''
+
         self.logger.error(msg, *args)
 
     def log_build(self, build_info: dict):
-        ''' 
+        """
             Log a build status.
             
             <date time> - BUILD: BUILD <commit_id> SUCCESS/FAILURE: 
                 <status_msg>
 
-            :param build_info: A dictionary containng 
-                'success : bool' -- whether build was a success or not
-                'commit_id : str' -- the id of the commit tested
-                'status_msg : str' -- message containing, for example, error message.
-        '''
+            Parameters
+            ----------
+            `build_info` : (`dict`)
+                A dictonary containg:
+                `success` : (`bool`)
+                    Whether the build was a success or not.
+                `commit_id` : (`str`)
+                    The id of the commit tested.
+                `status_msg` : (`str`)
+                    Message containing, for example, an error message.
+        """
 
-        # Extract dict data
         success = build_info["success"]
         commit_id = build_info["commit_id"]
         status_msg = build_info["status_msg"]
