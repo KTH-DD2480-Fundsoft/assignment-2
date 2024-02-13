@@ -1,6 +1,6 @@
 import os
+from ci_server import log
 from flask import Flask, request 
-from ci_server.logger import Logger
 from datetime import datetime
 from ci_server.ci_runner import continuous_integration 
 from multiprocessing import Process
@@ -32,7 +32,6 @@ def verify_signature(payload_body, secret_token, headers):
         return False
     return True
 
-log = Logger()
 
 UNAUTHORIZED = ("unauthorized", 401)
 BAD_REQUEST  = ("bad request" , 400)
