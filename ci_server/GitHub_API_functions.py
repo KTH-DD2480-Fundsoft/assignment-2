@@ -27,6 +27,9 @@ def create_commit_status(commit_hash, status):
       The status code of the POST request. `201` if the update could be made.
     `returned_set_state` : (`str`)
       The echoed state of the commit status from the POST request, or a message if `returned_status_code` is not `201`.
+    `returned_target_url` : (`str`)
+    The echoed target url that the commit is connected to after the POST request. Returns "Fail" if the POST request is not 
+    successful.
     '''
 
     # Data about the commit to post on GitHub
