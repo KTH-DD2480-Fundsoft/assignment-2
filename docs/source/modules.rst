@@ -7,6 +7,7 @@ Contents
 .. toctree::
    ci_server
    test_ci_server
+   test_runner
 
 .. toctree::
    :maxdepth: 4
