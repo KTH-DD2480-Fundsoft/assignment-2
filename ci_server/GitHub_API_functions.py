@@ -87,7 +87,7 @@ def create_commit_status(commit_hash, status):
 
   # Create commit status
   url_commit = f"https://api.github.com/repos/{OWNER}/{REPO}/statuses/{SHA}"
-  data = {"state":status,"target_url":"https://example.com/build/status","description":COMMIT_DESCRIPTION,"context":CONTEXT}
+  data = {"state":status,"target_url":"https://prompt-possum-first.ngrok-free.app/","description":COMMIT_DESCRIPTION,"context":CONTEXT}
 
   # Create and send POST request
   try:
@@ -103,9 +103,10 @@ def create_commit_status(commit_hash, status):
   if post_response.status_code == 201:
     log.info("successfully set commit status")
     returned_set_state   = post_response.json()["state"]
-  else:
-    log.error(f"setting commit status failed! {post_response.status_code}")
+    returned_target_url  = post_response.json()["target_url"]
+  elif post_response.status_code != 201:
     returned_set_state   = post_response.json()["message"]
-  
-  return returned_status_code, returned_set_state
+    returned_target_url    = "Fail"
+
+  return returned_status_code, returned_set_state, returned_target_url
 
