@@ -13,4 +13,4 @@ class CompilationTests(unittest.TestCase):
         '''
 
         res = compileall.compile_dir("ci_server", force=True, quiet=1)
-        self.assertFalse(res, msg="Failed to compile the file sin ci_server")
+        self.assertTrue(res, msg="Failed to compile the file sin ci_server")
