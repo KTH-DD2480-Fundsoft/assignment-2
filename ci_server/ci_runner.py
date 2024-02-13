@@ -87,10 +87,6 @@ def run_tests():
         errors, failures = ([f"INTERNAL FAILURE: {str(e)}"],[])
     finally:
         os.chdir(PROJ_ROOT)
-        print("errors type", type(errors))
-        print("errors", errors)
-        print("failures type", type(failures))
-        print("failures", failures)
         return errors, failures 
 
 def pull_repo(commit_hash):
