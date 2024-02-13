@@ -28,7 +28,7 @@ class TestLogger(unittest.TestCase):
 
         self.build_file_path = os.path.join(self.build_dir, self.latest_build_file) # latest build file path
         self.log_file_path = datetime.now().strftime("log/%Y-%m-%d.test.log")
-        
+
 
     
     def test_latest_build_log_file_path(self):
@@ -112,7 +112,6 @@ class TestLogger(unittest.TestCase):
         f.close()
         self.assertTrue("SUCCESS" in data and "123456" in data and "some message" in data)
     
-    @classmethod
     def tearDown(self):
         ''' 
             Clears the content of the test log file
