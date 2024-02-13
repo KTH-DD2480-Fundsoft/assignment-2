@@ -1,3 +1,6 @@
+import hashlib
+import hmac
+import json
 import os
 import unittest
 from multiprocessing import Process 
@@ -33,23 +36,24 @@ class TestServer(unittest.TestCase):
         cls.app = app  
         cls.server = Process(target=start_server, args=(cls.ip, cls.port))
         cls.server.start()
-        time.sleep(1)  
-    
-    @property 
-    def valid_authkey(self):
+        time.sleep(1)        
+
+    def get_valid_authkey(self,payload): 
         '''
             Property returning the valid AUTHKEY
 
             Parameters
             ----------
-
+              :param payload: the bytes to be sent
+              :type payload: bytes
             Returns
             -------
-            `self.new_authkey` : (`str`)
-                Valid AUTHKEY
+              :returns the hash signature (authkey) : (`str`)
+              :rettype: str
         '''
-
-        return self.new_authkey
+        hash_object = hmac.new(self.new_authkey.encode('utf-8'), msg=payload, digestmod=hashlib.sha256)
+        signature = "sha256=" + hash_object.hexdigest()
+        return signature
 
     @property 
     def invalid_authkey(self): 
@@ -80,16 +84,15 @@ class TestServer(unittest.TestCase):
             data : (`dict`)
                 A dictionary containing branch, commit, and push info.
         '''
-
-        data = {} 
-        data['ref'] = "ref/this/branch/doesnt/exist"
-        data['head_commit'] = {
-            "id" : "123",
-            "author" : "John Doe",
-            "timestamp" : "2000-10-31T01:30:00.000+01:00"
+        return {
+            'ref' : "ref/this/branch/doesnt/exist",
+            'head_commit' : {
+                "id" : "123",
+                "author" : "John Doe",
+                "timestamp" : "2000-10-31T01:30:00.000+01:00"
+            },
+            'pusher' : { "name" : "Jane Doe" }
         }
-        data['pusher'] = { "name" : "Jane Doe" }
-        return data
 
     def test_webhook_bad_authkey(self):
         '''
@@ -107,11 +110,10 @@ class TestServer(unittest.TestCase):
             Tests that a webhook request with a valid `AUTH_KEY` but invalid JSON results 
             in a HTTP `400` response code.
         '''
-
-        payload = {"mol" : 42}
-        headers = {"X-Hub-Signature-256" : self.valid_authkey}
+        payload = json.dumps({"mol" : 42}).encode('utf-8')
+        headers = {"X-Hub-Signature-256" : self.get_valid_authkey(payload)}
         with self.app.test_client() as client:
-            response = client.post(self.webhook_addr,json=payload, headers=headers)
+            response = client.post(self.webhook_addr,data=payload, headers=headers)
             self.assertTrue(response.status_code == 400, 
                             msg=f"Expected HTTP 400 for bad json, got {response.status_code}")
     
@@ -119,11 +121,11 @@ class TestServer(unittest.TestCase):
         '''
             Tests that posting a valid webhook request results in a HTTP 202 response code.
         '''
-
-        headers = {"X-Hub-Signature-256" : self.valid_authkey}
+        payload = json.dumps(self.valid_data).encode('utf-8')
+        headers = {"X-Hub-Signature-256" : self.get_valid_authkey(payload)}
         with self.app.test_client() as client:
             response = client.post(self.webhook_addr,
-                            json=self.valid_data,
+                            data=payload,
                             headers=headers)
             self.assertTrue(response.status_code == 202,
                             msg=f"Expected HTTP 202, got {response.status_code}") 
