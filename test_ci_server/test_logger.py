@@ -23,25 +23,28 @@ import os
 
 class TestLogger(unittest.TestCase):
 
-    max_time_since_created_last_build_log = 10 # milliseconds
+    @classmethod
+    def setUpClass(cls):
+        cls.logger = ci_server.logger.Logger(test=True)
 
-    logger = ci_server.logger.Logger(test=True)
 
-    build_dir = 'build_history'
-    build_files = os.listdir(build_dir)
+    def setUp(self):
+        self.max_time_since_created_last_build_log = 10 # milliseconds
 
-    def test_exists_files_in_build_history(self):
-        print(f'self.build_files = {self.build_files}')
-        if not self.build_files:
-            self.fail("No files found in build history directory")
-    
-    build_files.sort(reverse=True)  # Sort files in reverse alphabetical order
-    latest_build_file = build_files[0]
-    build_file_path = os.path.join(build_dir, latest_build_file) # latest build file path
+        self.build_dir = 'build_history'
 
-    log_file_path = datetime.now().strftime("log/%Y-%m-%d.test.log")
+        build_files = os.listdir(self.build_dir)
 
-    
+        if not build_files:
+            self.fail(f'no directory "{self.build_dir}" found')
+        
+        build_files.sort(reverse=True)  # Sort files in reverse alphabetical order
+        self.latest_build_file = build_files[0]
+
+
+        self.build_file_path = os.path.join(self.build_dir, self.latest_build_file) # latest build file path
+        self.log_file_path = datetime.now().strftime("log/%Y-%m-%d.test.log")
+        
 
     
     def test_latest_build_log_file_path(self):
@@ -53,7 +56,6 @@ class TestLogger(unittest.TestCase):
         # Calculate current time and compare
         current_time = datetime.now()
         time_difference = current_time - file_timestamp
-
 
         # Assert that the time difference is at least max_time_since_created_last_build_log milliseconds
         self.assertLessEqual(time_difference, timedelta(milliseconds=self.max_time_since_created_last_build_log),
@@ -75,18 +77,18 @@ class TestLogger(unittest.TestCase):
             given in logger.py
         '''
 
-        f = open(self.log_file_path)
-        f.seek(0,2)
         self.logger.debug("test1")
         self.logger.info("test2")
         self.logger.warning("test3")
         self.logger.error("test4")
-        l1 = f.readline()
-        l2 = f.readline()
-        l3 = f.readline()
-        l4 = f.readline()
-        self.assertTrue("DEBUG: test1"   in l1, msg = "Wrong format when writing DEBUG log")
-        self.assertTrue("INFO: test2"    in l2, msg = "Wrong format when writing INFO log")
+        f = open(self.log_file_path)
+        lines = f.readlines()
+        l1 = lines[-4]
+        l2 = lines[-3]
+        l3 = lines[-2]
+        l4 = lines[-1]
+        self.assertTrue("DEBUG: test1"   in l1, msg = f'"DEBUG: test1" not found in {l1}')
+        self.assertTrue("INFO: test2"    in l2, msg = f'"INFO: test2" not found in {l2}')
         self.assertTrue("WARNING: test3" in l3, msg = "Wrong format when writing WARNING log")
         self.assertTrue("ERROR: test4"   in l4, msg = "Wrong format when writing ERROR log")
         f.close() 
@@ -115,3 +117,6 @@ class TestLogger(unittest.TestCase):
         data = f.read() 
         f.close()
         self.assertTrue("SUCCESS" in data and "123456" in data and "some message" in data)
+
+    def tearDown(self):
+        open(self.log_file_path, 'w').close()

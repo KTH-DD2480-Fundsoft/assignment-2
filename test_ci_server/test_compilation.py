@@ -1,8 +1,12 @@
-import subprocess
 import unittest
+import compileall
 
 class CompilationTests(unittest.TestCase):
-    def test_compile_file(self):
-        path = "ci_server/logger.py"
-        result = subprocess.run(['python', '-m', 'py_compile', path], capture_output=True, text=True)
-        self.assertTrue(result.returncode == 0, result.stderr)
+
+    def test_compile_ci_logic(self):
+        ''' 
+            'Compiles' all files in the directory `ci_server`. Iff any file fails to compile 
+            this test fails.
+        '''
+        res = compileall.compile_dir("ci_server", force=True)
+        self.assertTrue(res, msg="Failed to compile the file sin ci_server")

@@ -1,9 +1,51 @@
+import os
+from ci_server import log
 from flask import Flask, request 
+from datetime import datetime
+from ci_server.ci_runner import continuous_integration 
+from multiprocessing import Process
+from flask_autoindex import AutoIndex
+
+import json
+
+# for verifying signature
+import hashlib
+import hmac
+
+def verify_signature(payload_body, secret_token, headers):
+    """Verify that the payload was sent from GitHub by validating SHA256.
+
+    Raise and return 403 if not authorized.
+
+    Args:
+        payload_body: original request body to verify (request.body())
+        secret_token: GitHub app webhook token (WEBHOOK_SECRET)
+        signature_header: header received from GitHub (x-hub-signature-256)
+    """
+       
+    if "X-Hub-Signature-256" not in headers:
+        return False
+    
+    hash_object = hmac.new(secret_token.encode('utf-8'), msg=payload_body, digestmod=hashlib.sha256)
+    expected_signature = "sha256=" + hash_object.hexdigest()
+    if not hmac.compare_digest(expected_signature, headers["X-Hub-Signature-256"]):
+        return False
+    return True
+
+
+UNAUTHORIZED = ("unauthorized", 401)
+BAD_REQUEST  = ("bad request" , 400)
+INTERNAL_ERROR = ("internal error", 500)
 
 app = Flask(__name__)
+app.config.from_prefixed_env(loads=lambda x: x)
 
+build_path = "./build_history" # Relative path to the build history directory
 
+# Show the files in the build history directory
+AutoIndex(app, browse_root=build_path) 
 
+assert app.config["AUTHKEY"], "No authkey in ENV"
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
@@ -17,13 +59,13 @@ def webhook():
     We only want to deal with GitHub webhooks, more specifically, only push and release
     events. See:
     
-    `this <https://docs.github.com/en/webhooks/webhook-events-and-payloads#push/>`_
+    `This <https://docs.github.com/en/webhooks/webhook-events-and-payloads#push/>`_
     and `this <https://docs.github.com/en/webhooks/webhook-events-and-payloads#release/>`_ 
     respectively.
 
 
     Parameters
-        ----------
+    ----------
     Returns
     ----------
     response : (`response`)
@@ -36,13 +78,54 @@ def webhook():
         This function, however, should only return JSON and a return-code.
 
     '''
-    # Only accept POST requests.
-    if request.method == 'POST':
-        # Guard agains bad data.
-        if request.is_json:
-            print("Got WH data: ", request.json)
-            return {"response" : "thanks!"}, 202 
-    return ({}, 400)
+    log.info(f"New webhook from {request.remote_addr}")
+    
+    data = request.data
+
+    # Make sure the authkey is correct.
+    authkey = app.config["AUTHKEY"]
+    authorized = verify_signature(data, authkey, request.headers)
+    if not authorized:
+        log.error(f"Invalid secret key from {request.remote_addr}")
+        return UNAUTHORIZED
+    # Make sure data is JSON
+    if not request.is_json: return BAD_REQUEST 
+    
+    # Try to get all the data needed
+    try:
+        data = json.loads(data.decode())
+        ref           = data['ref']
+        commit_id     = data['head_commit']['id']
+        timestamp     = datetime.fromisoformat(data['head_commit']['timestamp'])
+        commit_author = data['head_commit']['author']
+        pusher        = data['pusher']['name'] 
+    # All the above data is required, bad data otherwise
+    except KeyError as e:
+        log.error(str(e))
+        return BAD_REQUEST 
+    except ValueError as e:
+        log.error(str(e))
+        return BAD_REQUEST 
+    # Any other exception is a server error
+    except Exception as e:
+        log.error("unhandled exception: " + str(e))
+        return INTERNAL_ERROR
+    
+    log.info(f"""Received CI webhook from {request.remote_addr}
+    ref: {ref}
+    commit: 
+        id: {commit_id}
+        timestamp {timestamp.timestamp}    
+        author: {commit_author}
+    pusher: {pusher}""")
+    
+    if not app.config['TESTING']:
+        # Fire and forget. Not tested when testing the server, we have seperate
+        # unittests for this.
+        ci_process = Process(target=continuous_integration, args=(commit_id,))
+        ci_process.start()
+
+    return {"response" : "thanks!"}, 202 
 
 @app.route('/', methods=['GET'])
 def index():
@@ -54,7 +137,7 @@ def index():
     when someone accesses example.org/ -- the 'home page'.
 
     Parameters
-        ----------
+    ----------
     Returns
     ----------
     response : (`response`)
@@ -79,7 +162,3 @@ def index():
 
 def start_server(ip,port): 
     app.run(host=ip,port=port)
-
-if __name__ == '__main__': start_server("0.0.0.0",8027)
-
-

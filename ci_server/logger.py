@@ -35,19 +35,16 @@ class Logger():
         # Create a logger for standard log levels
         self.logger = logging.getLogger("Log")
         self.logger.setLevel(logging.DEBUG) # allows all log levels 
+        if not os.path.exists("log"):
+            os.makedirs("log", exist_ok=True)
         handler = logging.FileHandler(f"log/{filename}")
         formatter = logging.Formatter(log_str_format)
         handler.setFormatter(formatter)
         self.logger.addHandler(handler)
 
-        # # Create a logger for BUILD level logs
-        # self.build_logger = logging.getLogger("Build")
-        # self.build_logger.setLevel(logging.INFO)  # Only allow INFO level for BUILD
-        # build_handler = logging.FileHandler(f"build_history/build_{build_filename}")
-        # build_formatter = logging.Formatter(build_log_str_format)
-        # build_handler.setFormatter(build_formatter)
-        # build_handler.addFilter(InfoOnlyFilter())  # Add the custom filter that only allows INFO level logs
-        # self.build_logger.addHandler(build_handler)
+
+
+
 
     def __del__(self):
         self._close()
@@ -91,7 +88,7 @@ class Logger():
                 'success : bool' -- whether build was a success or not
                 'commit_id : str' -- the id of the commit tested
                 'status_msg : str' -- message containing, for example, error message.
-        ''' 
+        '''
 
         # Extract dict data
         success = build_info["success"]
@@ -107,6 +104,11 @@ class Logger():
         # Create a logger for BUILD level logs
         self.build_logger = logging.getLogger("Build")
         self.build_logger.setLevel(logging.INFO)  # Only allow INFO level for BUILD
+
+        # make sure that the build_history directory exists
+        if not os.path.exists("build_history"):
+            os.makedirs("build_history", exist_ok=True)
+        # create build log handlers
         build_handler = logging.FileHandler(f"build_history/build_{build_filename}")
         build_formatter = logging.Formatter(build_log_str_format)
         build_handler.setFormatter(build_formatter)
