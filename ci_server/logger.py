@@ -12,9 +12,21 @@ class InfoOnlyFilter(logging.Filter):
         A filter for enforcing that the logger
         build_logger can only log at INFO level
     '''
-    
-    # TODO: This is never used. Can it be removed?
     def filter(self, record):
+        '''
+            Filter method for enforcing that build_logger
+            logs at INFO level. 
+
+            Parameters
+            ----------
+            `record` : (`LogRecord`)
+                The LogRecord that is being enforced.
+
+            Returns
+            -------
+            `record.levelno == logging.INFO` : (`bool`)
+                Boolean value enforcing the logging level.
+        '''
         return record.levelno == logging.INFO
 
 
