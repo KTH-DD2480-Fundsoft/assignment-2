@@ -1,4 +1,4 @@
-from ci_server import log
+from ci_server import log, github_owner, github_repo, github_token
 import requests
 from requests.auth import HTTPBasicAuth
 import os
@@ -12,9 +12,9 @@ curl https requests
 # OBS! 
 # Could be nice to pass along the commit_json_hook from GitHub to extract GitHub params from. Generalizes to be able to handle several
 # different repos
-
+'''
 def get_github_values():
-  '''
+  ' ''
     Automatically retreives the different parameters needed from GitHub. This is done by extracting the Owner of the repository, 
     the repository name, the commit hash that was most recently tested by the CI server. 
     Saved GitHub authentication tokens that are saved on owns personal operating system are also collected 
@@ -32,7 +32,7 @@ def get_github_values():
       A string with the name of the repository
     github_token: (str)
       A string with a functioning github token used to authnticate oneself with the Github repository  
-  '''
+  '' '
 
   # If we change so that json file from GitHub hook is passed along with commit success not just commit hash
   #github_owner  = commit_json_hook["owner"]  PLACE HOLDER
@@ -44,9 +44,9 @@ def get_github_values():
   github_owner = "KTH-DD2480-Fundsoft"
   github_repo  = "assignment-2"
   github_token = os.environ.get("GitHub_token") #PLACER HOLDER: WORKS ONLY ON LINUX ATM
-
+  if not github_token: raise Exception("Github token not defined")
   return github_owner, github_repo, github_token
-
+'''
 
 def create_commit_status(commit_hash, status):
   '''
@@ -68,7 +68,7 @@ def create_commit_status(commit_hash, status):
   '''
 
   # GitHub parameters
-  OWNER, REPO, github_token = get_github_values()
+  OWNER, REPO = github_owner, github_repo#, github_token = get_github_values()
   SHA  = commit_hash
 
   # Data about the commit to post on GitHub
@@ -84,22 +84,21 @@ def create_commit_status(commit_hash, status):
   elif status == "pending":
     COMMIT_DESCRIPTION = "The build is pending!"
     CONTEXT = "Continuos integration server"
+  else: raise ValueError("invalid status")
 
   # Create commit status
   url_commit = f"https://api.github.com/repos/{OWNER}/{REPO}/statuses/{SHA}"
   data = {"state":status,"target_url":"https://example.com/build/status","description":COMMIT_DESCRIPTION,"context":CONTEXT}
 
-  # Create and send POST request
-  try:
-    post_response = requests.post(url_commit
-                                ,json=data
-                                ,auth=HTTPBasicAuth(OWNER,github_token)
-                                )
-  except requests.ConnectionError as error:
-    print(error)
+  headers = {'Authorization': 'token ' + github_token}
 
+  # Create and send POST request
+  post_response = requests.post(url_commit
+                                ,json=data
+                                ,headers=headers)
   # returns status code and state that was set/potential error message from POST request response
   returned_status_code = post_response.status_code
+  log.info(f"API response headers: {post_response.headers}")
   if post_response.status_code == 201:
     log.info("successfully set commit status")
     returned_set_state   = post_response.json()["state"]

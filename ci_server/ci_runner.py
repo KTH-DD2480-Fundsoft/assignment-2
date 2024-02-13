@@ -22,38 +22,42 @@ def continuous_integration(commit_hash):
         :return: Whether the CI was successful or not.
         :rtype: bool
     '''
-    logger = Logger()
-    
-    log.info(f"Pulling repository with hash {commit_hash}")
-    pull_repo(commit_hash)
+    try:
+        
+        log.info(f"Pulling repository with hash {commit_hash}")
+        pull_repo(commit_hash)
 
-    log.info("Running tests")
-    errors, failures = run_tests()
-    print(errors,failures) 
-    # TODO: Add better way of determining a successful run
-    successful_run = not errors and not failures  
+        log.info("Running tests")
+        errors, failures = run_tests()
+        print(errors,failures) 
+        # TODO: Add better way of determining a successful run
+        successful_run = not errors and not failures  
 
-    build_dict = {"commit_id" : commit_hash}
-    if successful_run:
-        build_dict["success"] = True
-        build_dict["status_msg"] = "Success"
-        commit_status = 'success'
-    else:
-        build_dict["success"] = False
-        build_dict["status_msg"] = '\n'.join(errors + failures)
-        commit_status = 'error' if errors else 'failure'
+        build_dict = {"commit_id" : commit_hash}
+        if successful_run:
+            build_dict["success"] = True
+            build_dict["status_msg"] = "Success"
+            commit_status = 'success'
+        else:
+            build_dict["success"] = False
+            build_dict["status_msg"] = '\n'.join(errors + failures)
+            commit_status = 'error' if errors else 'failure'
 
-    log.log_build(build_dict)
+        log.log_build(build_dict)
 
-    log.info("Updating commit status")
-    
-    create_commit_status(commit_hash, commit_status)
+        log.info("Updating commit status")
+        
+        create_commit_status(commit_hash, commit_status)
 
-    log.info("Removing repository")
-    remove_repo()
+        log.info("Removing repository")
+        remove_repo()
 
-    return successful_run
-
+        return successful_run
+    except Exception as e:
+        log.error(f"Fatal error: {str(e)}\n\t sending error to GH.")
+        try: create_commit_status(commit_hash,"error")
+        except Exception as ce: log.error(commit_hash, "failed to send error!")
+        finally: return False
 def run_tests():
     ''' 
         Call the test.py file of the remote repository
