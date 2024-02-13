@@ -14,19 +14,23 @@ import os
 
 def get_github_values():
   '''
-    Automatically retreives the different parameters needed from GitHub. This is done by extracting the Owner of the repository, 
-    the repository name, the commit hash that was most recently tested by the CI server. 
-    Saved GitHub authentication tokens that are saved on owns personal operating system are also collected 
-    from the file .bash_profile on LINUX.
+    Automatically retreives the different parameters needed from GitHub. This
+    is done by extracting the owner of the repository, the repository name,
+    and the commit hash that was most recently tested by the CI server. Saved
+    GitHub authentication tokens that are saved on owns personal operating
+    system are also collected from the shell of the system.
+
+    Parameters
+    ----------
 
     Returns
     ----------
     `github_owner` : (`str`)
-      A string with the owner of the repository
+      A string with the owner of the repository.
     `github_repo` : (`str`)
-      A string with the name of the repository
+      A string with the name of the repository.
     `github_token` : (`str`)
-      A string with a functioning github token used to authnticate oneself with the Github repository  
+      A string with a functioning github token used to authnticate oneself with the Github repository.
   '''
 
   # If we change so that json file from GitHub hook is passed along with commit success not just commit hash
@@ -46,24 +50,26 @@ def get_github_values():
 def create_commit_status(commit_hash, status):
   '''
     Creates a POST request to the GitHub repository in order to update the
-    status of the commit that was recently evaluated on the CI server. Updates
-    the commit status of commits on GitHub from the CI server through the GitHub
-    API. Also adds a description and context string from the CI that adds additional information from the CI regarding the build.
+    status of the commit identified by `commit_hash`, namely the commit
+    that was recently evaluated on the CI server. Updates the commit status
+    of the commit on GitHub from the CI server through the GitHub API. Also
+    adds a description and context string from the CI that adds additional
+    information from the CI regarding the build.
 
     Parameters
     ----------
     `commit_hash` : (`str`)
-      The hash of the commit that is currently being verified on the CI server
+      The sha256 hash of the commit whose commit status is to be updated.
     `status` : (`str`)
-      The status of the evaluation of the commit build. Can be either "success", "failure", "error" or "pending"
+      The status of the evaluation of the commit build. Can be either "success", "failure", "error" or "pending".
 
     Returns
     ----------
     `returned_status_code` : (`int`)
-      The status code of the POST request.
+      The status code of the POST request. `201` if the update could be made.
+    TODO: Add parameter type.
     `returned_set_state` : (`?`)
-      The state of the POST request, or a message if `returned_status_code`
-      is not `201`.
+      The state of the POST request, or a message if `returned_status_code` is not `201`.
   '''
 
   # GitHub parameters

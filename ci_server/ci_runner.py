@@ -12,16 +12,23 @@ PROJ_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TMP_PATH = os.path.abspath(os.path.join(PROJ_ROOT, "tmp/"))
 
 def continuous_integration(commit_hash):
-    '''
-        This function runs the continuous integration tasks for the given commit.
-        Logs the results in build_history.
+    """
+        Runs the continous integration process for the commit identified by
+        `commit_hash`, where the repository is cloned, tests are executed,
+        the results are logged and the commit status is updated. The results
+        are logged in the directory `build_history/`.
 
-        :param commit_hash: The sha256 hash of the commit to be build tested.
-        :type commit_hash: str
+        Parameters
+        ----------
+        `commit_hash` : (`str`)
+            The sha256 hash of the commit to be build tested.
 
-        :return: Whether the CI was successful or not.
-        :rtype: bool
-    '''
+        Returns
+        ----------
+        `successful_run` : (`bool`)
+            `True` if the CI was successful, otherwise `False`.
+    """
+
     logger = Logger()
     
     logger.info(f"Pulling repository with hash {commit_hash}")
@@ -56,9 +63,22 @@ def continuous_integration(commit_hash):
 
 def run_tests():
     ''' 
-        Call the test.py file of the remote repository
-        and parse the results 
+        Call the `test_runner` package of the remote repository and parse
+        the results.
+
+
+        Parameters
+        ----------
+
+        Returns
+        ----------
+        TODO: Document parameter types.
+        `errors` : (`?`)
+            TODO: Write explanation.
+        `failures` : (`?`)
+            TODO: Write explanation.
     '''
+
     cmd = ['python3',"-m", "test_runner"]
     errors, failures = (["UNKNOWN INTERNAL FAILURE"],[])
     try:
@@ -74,8 +94,14 @@ def run_tests():
 
 def pull_repo(commit_hash):
     """
-    Pulls the repository from the remote server
+        Clones the repository from the remote into a temporary directory.
+
+        Parameters
+        ----------
+        `commit_hash`: (`str`)
+            The sha256 hash of the commit that is to be cloned.
     """
+
     repo_url = "git@github.com:KTH-DD2480-Fundsoft/assignment-2.git"
     try:
         subprocess.run(["git", "clone", repo_url, TMP_PATH])
@@ -86,8 +112,9 @@ def pull_repo(commit_hash):
 
 def remove_repo():
     """
-    Removes the repository from the local server
+        Removes the repository from the temporary directory.
     """
+
     subprocess.run(["rm", "-rf", TMP_PATH])
     subprocess.run(["mkdir", TMP_PATH])
 
