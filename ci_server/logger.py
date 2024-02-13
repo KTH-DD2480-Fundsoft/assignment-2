@@ -49,12 +49,13 @@ class Logger():
                 bool determining if the Logger is run in a test enviornment or not.
                 If true, store the logs in a separate .test.log file
         """
-        test_str = ".test" if test else ""
-        filename = datetime.now().strftime(f"%Y-%m-%d{test_str}.log")
+        self.test_str = ".test" if test else ""
+        filename = datetime.now().strftime(f"%Y-%m-%d{self.test_str}.log") # for general logs
+        # build_filename = datetime.now().strftime(f"%Y-%m-%d_%H-%M-%S-%f{test_str}.txt") # for builds, favorable for displaying in browser if each build has its own txt file
 
         # The log message format
         log_str_format = '%(asctime)s - %(levelname)s: %(message)s'
-        build_log_str_format = '%(asctime)s: %(message)s' # Remove INFO string from printout
+        # build_log_str_format = '%(asctime)s: %(message)s' # Remove INFO string from printout
 
         # Create a logger for standard log levels
         self.logger = logging.getLogger("Log")
@@ -66,16 +67,9 @@ class Logger():
         handler.setFormatter(formatter)
         self.logger.addHandler(handler)
 
-        # Create a logger for BUILD level logs
-        self.build_logger = logging.getLogger("Build")
-        self.build_logger.setLevel(logging.INFO)  # Only allow INFO level for BUILD
-        if not os.path.exists("build_history"):
-            os.makedirs("build_history", exist_ok=True)
-        build_handler = logging.FileHandler(f"build_history/build_{filename}")
-        build_formatter = logging.Formatter(build_log_str_format)
-        build_handler.setFormatter(build_formatter)
-        build_handler.addFilter(InfoOnlyFilter())  # Add the custom filter that only allows INFO level logs
-        self.build_logger.addHandler(build_handler)
+
+
+
 
     def __del__(self):
         self._close()
@@ -166,11 +160,33 @@ class Logger():
         commit_id = build_info["commit_id"]
         status_msg = build_info["status_msg"]
 
+        # Setup
+        build_filename = datetime.now().strftime(f"%Y-%m-%d_%H-%M-%S-%f_{commit_id}{self.test_str}.txt") # for builds, favorable for displaying in browser if each build has its own txt file
+        
+        # The log message format
+        build_log_str_format = '%(asctime)s: %(message)s' # Begin the log with timestamp
+
+        # Create a logger for BUILD level logs
+        self.build_logger = logging.getLogger("Build")
+        self.build_logger.setLevel(logging.INFO)  # Only allow INFO level for BUILD
+
+        # make sure that the build_history directory exists
+        if not os.path.exists("build_history"):
+            os.makedirs("build_history", exist_ok=True)
+        # create build log handlers
+        build_handler = logging.FileHandler(f"build_history/build_{build_filename}")
+        build_formatter = logging.Formatter(build_log_str_format)
+        build_handler.setFormatter(build_formatter)
+        build_handler.addFilter(InfoOnlyFilter())  # Add the custom filter that only allows INFO level logs
+        self.build_logger.addHandler(build_handler)
+
+        # Compile the log message
         log_str = f"BUILD {commit_id} "
         log_str += "SUCCESS" if success else "FAILURE"
         log_str += ": \n" + "\n".join(
             ['\t' + line for line in status_msg.splitlines()]
         )
 
+        # Write the logs
         self.build_logger.info(log_str) # can only log at this level, any other level is filtered out
         self.logger.info(log_str) # can also log at DEBUG, ERROR and WARNING level
