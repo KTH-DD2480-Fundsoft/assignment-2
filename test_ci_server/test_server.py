@@ -39,7 +39,7 @@ class TestServer(unittest.TestCase):
         time.sleep(1)        
 
     def get_valid_authkey(self,payload): 
-      '''
+        '''
             Property returning the valid AUTHKEY
 
             Parameters
