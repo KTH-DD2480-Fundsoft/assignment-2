@@ -1,3 +1,6 @@
+import hashlib
+import hmac
+import json
 import os
 import unittest
 from multiprocessing import Process 
@@ -28,9 +31,10 @@ class TestServer(unittest.TestCase):
         cls.server.start()
         time.sleep(1)        
 
-    @property 
-    def valid_authkey(self): 
-        return self.new_authkey
+    def get_valid_authkey(self,payload): 
+        hash_object = hmac.new(self.new_authkey.encode('utf-8'), msg=payload, digestmod=hashlib.sha256)
+        signature = "sha256=" + hash_object.hexdigest()
+        return signature
 
     @property 
     def invalid_authkey(self): 
@@ -38,15 +42,15 @@ class TestServer(unittest.TestCase):
     
     @property
     def valid_data(self):
-        data = {} 
-        data['ref'] = "ref/this/branch/doesnt/exist"
-        data['head_commit'] = {
-            "id" : "123",
-            "author" : "John Doe",
-            "timestamp" : "2000-10-31T01:30:00.000+01:00"
+        return {
+            'ref' : "ref/this/branch/doesnt/exist",
+            'head_commit' : {
+                "id" : "123",
+                "author" : "John Doe",
+                "timestamp" : "2000-10-31T01:30:00.000+01:00"
+            },
+            'pusher' : { "name" : "Jane Doe" }
         }
-        data['pusher'] = { "name" : "Jane Doe" }
-        return data
 
     def test_webhook_bad_authkey(self):
         headers = {"X-Hub-Signature-256" : self.invalid_authkey}
@@ -56,18 +60,19 @@ class TestServer(unittest.TestCase):
                             msg=f"Expected HTTP 401 for bad authkey, got {response.status_code}")
     
     def test_webhook_bad_json(self):
-        payload = {"mol" : 42}
-        headers = {"X-Hub-Signature-256" : self.valid_authkey}
+        payload = json.dumps({"mol" : 42}).encode('utf-8')
+        headers = {"X-Hub-Signature-256" : self.get_valid_authkey(payload)}
         with self.app.test_client() as client:
-            response = client.post(self.webhook_addr,json=payload, headers=headers)
+            response = client.post(self.webhook_addr,data=payload, headers=headers)
             self.assertTrue(response.status_code == 400, 
                             msg=f"Expected HTTP 400 for bad json, got {response.status_code}")
     
     def test_webhook(self):
-        headers = {"X-Hub-Signature-256" : self.valid_authkey}
+        payload = json.dumps(self.valid_data).encode('utf-8')
+        headers = {"X-Hub-Signature-256" : self.get_valid_authkey(payload)}
         with self.app.test_client() as client:
             response = client.post(self.webhook_addr,
-                            json=self.valid_data,
+                            data=payload,
                             headers=headers)
             self.assertTrue(response.status_code == 202,
                             msg=f"Expected HTTP 202, got {response.status_code}") 
