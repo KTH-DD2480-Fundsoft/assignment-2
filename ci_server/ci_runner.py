@@ -99,7 +99,7 @@ def pull_repo(commit_hash):
 
         Parameters
         ----------
-        `commit_hash`: (`str`)
+        `commit_hash` : (`str`)
             The sha256 hash of the commit that is to be cloned.
     """
 
