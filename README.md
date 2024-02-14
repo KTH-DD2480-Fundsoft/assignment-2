@@ -180,3 +180,4 @@ was done in an ad-hoc manner.
 [Logic for the CI server](https://github.com/KTH-DD2480-Fundsoft/assignment-2/issues/11)
 [Test structure for the CI server](https://github.com/KTH-DD2480-Fundsoft/assignment-2/issues/7)
 [Documentation setup](https://github.com/KTH-DD2480-Fundsoft/assignment-2/issues/4)
+aaaaa
